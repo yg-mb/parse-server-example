@@ -60,7 +60,6 @@ Parse.Cloud.define("acceptFeaturedBooks", function(request, response) {
 					book.set("featuredAccepted", accept);
 					if(accept){
 						book.set("featuredActive", true);
-						book.set("createdAt", new Date());
 						//add aninews
 						var aninews = createAninews("book_featured", book);
 						promises.push(aninews.save(null, { useMasterKey: true }));
@@ -98,7 +97,6 @@ Parse.Cloud.define("acceptFeaturedBook", function(request, response) {
 					book.set("featuredAccepted", accept);
 					if(accept){
 						book.set("featuredActive", true);
-						book.set("createdAt", new Date());
 						var aninews = createAninews("book_featured", book);
                         promises.push(aninews.save(null, { useMasterKey: true }));
 					}
