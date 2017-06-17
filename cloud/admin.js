@@ -165,3 +165,32 @@ function createAninews(type, book, ownerUsername, relatedUsername){
 	console.log("creating new aninews:" + aninews);
 	return aninews;
 }
+
+//reduce user's score if not active for a while
+Parse.Cloud.define("updateOldUserScore", function(request, response) {
+
+	var dateLimit = new Date();
+	dateLimit.setDate(dateLimit.getDate() - 60); //older than 2 months
+
+	var userQuery = new Parse.Query(Parse.User);
+    userQuery.greaterThan("totalScore", 2000);
+    userQuery.descending("totalScore");
+    userQuery.lessThan("updatedAt", dateLimit)
+    userQuery.limit(1000);
+    userQuery.find({
+    		useMasterKey:true,
+    		success: function(results) {
+				for( i=0; i<results.length; i++){
+					var user = results[i];
+					var newScore = user.get("totalScore")/2;
+					console.log("update "+user.get("username")+" score from "+ user.get("totalScore") +" to "+newScore);
+					user.set("totalScore", newScore);
+                    user.save(null, { useMasterKey: true });
+				}
+				response.success("updated "+ results.length +" in-active users score");
+    		},
+    		error: function() {
+    			response.error("Old User doesn't exist! ");
+    		}
+    	});
+});
