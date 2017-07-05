@@ -237,4 +237,3 @@ Parse.Cloud.define("updateOldUserScore", function(request, response) {
     		}
     	});
 });
-}
