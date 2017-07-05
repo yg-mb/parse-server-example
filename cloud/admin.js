@@ -20,6 +20,49 @@ Parse.Cloud.define("updateReportedBook", function(request, response) {
 	});
 });
 
+Parse.Cloud.define("updateBanBook", function(request, response) {
+        var publishedBookQuery =new Parse.Query("PublishedBook");
+        var bookId =request.params.bookGuId;
+        var isBanBook=request.params.isBanBook;
+        console.log("search with ids:"+bookId);
+        publishedBookQuery.equalTo("guid",bookId);
+        publishedBookQuery.limit(1);
+        publishedBookQuery.find({
+                        useMasterKey:true,
+                        success: function(results) {
+                        var book = results[0];
+                        book.set("checked",true);
+                        book.set("banBook",isBanBook )
+                        book.save(null, { useMasterKey: true });
+                                response.success("book updated to "+ book.get("banBook"));
+                },
+                error: function() {
+                        response.error("book doesn't exist!"+request.params.bookGuId);
+                }
+        });
+});
+
+Parse.Cloud.define("updateBookComment",function(request, response){
+        var publishedBookQuery =new Parse.Query("PublishedBook");
+        var bookId = request.params.bookGuId;
+        var hasNewContent = request.params.hasNewContent;
+        console.log("search with ids:"+bookId);
+        publishedBookQuery.equalTo("guid",bookId);
+        publishedBookQuery.limit(1);
+        publishedBookQuery.find({
+                useMasterKey:true,
+                success: function(results) {
+                        var book = results[0];
+                        book.set("checked",true);
+                        book.set("hasNewContent",hasNewContent )
+                        book.save(null, { useMasterKey: true });
+                        response.success("book updated to hasNewContent "+ book.get("hasNewContent"));
+                },
+                error: function() {
+                        response.error("book doesn't exist!"+request.params.bookGuId);
+                }
+        });
+});
 
 Parse.Cloud.define("markFeedbackAsRead", function(request, response) {
 	var feedbackQuery =new Parse.Query("UserFeedback");
@@ -194,3 +237,4 @@ Parse.Cloud.define("updateOldUserScore", function(request, response) {
     		}
     	});
 });
+}
