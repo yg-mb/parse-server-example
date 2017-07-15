@@ -498,7 +498,7 @@ Parse.Cloud.define("updatePortfolioStatus", function(request, response) {
                         var userProfile = results[0];
                         userProfile.set("hasNewContent",hasNewContent )
                         userProfile.save(null, { useMasterKey: true });
-                                response.success("userProfile updated to "+ book.get("userProfile"));
+                        response.success("userProfile updated for "+ username);
                 },
                 error: function() {
                         response.error("userProfile doesn't exist!"+request.params.username);
