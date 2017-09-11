@@ -424,21 +424,19 @@ Parse.Cloud.define("updateUserStats", function(request, response) {
 							var totalCheats = 0;
 
 							for (i=0; i < books.length; i++) {
-								var book = books[i];
-								var isBookActive = book.get("active") || (book.get("active")=== undefined);
-								if(isBookActive){
-									var bookReads = book.get("playedTimes") || 0;
-									var bookLikes = book.get("likedTimes") || 0;
-									if (bookReads >= bookLikes) {
-										totalReads += bookReads;
-										totalLikes += bookLikes;
-									}else{
-										totalCheats ++;
+									var book = books[i];
+											var bookReads = book.get("playedTimes") || 0;
+											var bookLikes = book.get("likedTimes") || 0;
+											if (bookReads >= bookLikes) {
+												totalReads += bookReads;
+												totalLikes += bookLikes;
+											}else{
+												totalCheats ++;
+											}
+											totalFeatured += book.get("featuredAccepted") || 0;
+									if(book.get("banBook")){
+											totalBannedBook ++;
 									}
-									totalFeatured += book.get("featuredAccepted") || 0;
-								}else{
-									totalBannedBook ++;
-								}
 							}
 							var totalScore = totalReads * 10 + totalLikes * 50 + totalFeatured * 250 + totalAppUseTimeScore - totalBannedBook * 250 - totalCheats * 250;
 							user.set("totalReadsByOthers", totalReads);
