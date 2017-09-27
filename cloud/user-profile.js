@@ -291,6 +291,9 @@ function applyProductToUser(userProfileHolder, product, amount, params){
 		var promises = [];
 		promises.push(userProfile.save(null, {useMasterKey: true}));
 		promises.push(recordUserPurchaseHistory(userProfile, product, amount, coinsChange, params));
+		if("super_anitaler_action"== product.get("name")){
+			promises.push(logUserAction(userProfile.get("username"), product.get("name"), params.get("itemName")));
+		}
 
 		return Parse.Promise.when(promises).then(function (results) {
 			userProfileHolder.userProfile = results[0];
@@ -504,3 +507,98 @@ Parse.Cloud.define("updatePortfolioStatus", function(request, response) {
         });
 });
 
+Parse.Cloud.define("blockUser", function(request, response) {
+        var UserProfileQuery =new Parse.Query("UserProfile");
+        var username =request.params.username;
+        var blockBy=request.params.byUser;
+        var blockComment=request.params.comment;
+        var blocked=request.params.blocked || true;
+        if(!blockBy || !blockComment){
+         response.error("could not block user"+request.params.username);
+        }
+								var blockMessage;
+        if(blocked){
+        	 blockMessage = "Blocking user :"+username+" by "+blockBy+" due to: "+blockComment;
+        }else{
+          blockMessage = "Unblocking user :"+username+" by "+blockBy+" due to: "+blockComment;
+        }
+								console.log(blockMessage);
+
+        UserProfileQuery.equalTo("username",username);
+        UserProfileQuery.limit(1);
+        UserProfileQuery.find({useMasterKey:true})
+          .then( function (results){
+             var userProfile = results[0];
+              userProfile.set("blocked",blocked )
+              userProfile.set("blockBy",blockBy )
+              userProfile.set("blockComment",blockComment )
+              return userProfile.save(null, { useMasterKey: true });
+            })
+          .then( function (){
+              return blockUserContent(username, blocked ? "block": "unblock", blockMessage);
+             })
+          .then( function (){
+              return logUserAction(blockBy, blocked);
+             })
+		        .then ( function () {
+			          response.success("Updated User: "+ username);
+		          },
+           function(error){
+              console.log("error:"+error);
+              response.error("failed to blockUser:"+error);
+		        });
+});
+
+function blockUserContent(username, blocked){
+
+   if(blocked){
+     console.log("Blocking content of :"+username);
+   }else{
+     console.log("Unblocking content of :"+username);
+   }
+			var queryPromises = [];
+
+  	var bookQuery =new Parse.Query("PublishedBook");
+   	bookQuery.equalTo("AuthorName",username);
+   	queryPromises.push(bookQuery.find({useMasterKey:true}));
+
+   	var bookCommentQuery =new Parse.Query("BookComment");
+    bookCommentQuery.equalTo("username",username);
+    queryPromises.push(bookCommentQuery.find({useMasterKey:true}));
+
+  return	Parse.Promise.when(queryPromises).then( function(results) {
+  //       console.log("user:"+user.toJSON());
+	    var books = results[0];
+	    var bookComments = results[1];
+	    var updatePromises = [];
+	    console.log("Updating books:"+books.length);
+	    for (var i = 0; i < books.length; i++) {
+	        var book = books[i];
+	        book.set("banBook", blocked);
+	        updatePromises.push(book.save(null, { useMasterKey: true }));
+	        }
+	    console.log("Updating bookComments:"+bookComments.length);
+	    for (var i = 0; i < bookComments.length; i++) {
+	        var bookComment = bookComments[i];
+	        bookComment.set("active", !blocked);
+	        updatePromises.push(bookComment.save(null, { useMasterKey: true }));
+	        }
+	     }
+    	return Parse.Promise.when(updatePromises);
+  		});
+
+}
+
+function logUserAction(username, type, action){
+				console.log("user:"+username+", type:"+type +", action:"+ action);
+				var ActionLogClass = Parse.Object.extend("UserActionLog");
+				var actionLog = new ActionLogClass();
+				actionLog.set("username", username);
+				if(action){
+					actionLog.set("action", action);
+				}
+				if(type){
+					actionLog.set("type", type);
+				}
+				return actionLog.save(null, { useMasterKey: true }));
+}
