@@ -583,7 +583,6 @@ function blockUserContent(username, blocked){
 	        bookComment.set("active", !blocked);
 	        updatePromises.push(bookComment.save(null, { useMasterKey: true }));
 	        }
-	     }
     	return Parse.Promise.when(updatePromises);
   		});
 
