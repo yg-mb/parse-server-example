@@ -292,7 +292,7 @@ function applyProductToUser(userProfileHolder, product, amount, params){
 		promises.push(userProfile.save(null, {useMasterKey: true}));
 		promises.push(recordUserPurchaseHistory(userProfile, product, amount, coinsChange, params));
 		if("super_anitaler_action"== product.get("name")){
-			promises.push(logUserAction(userProfile.get("username"), product.get("name"), params.get("itemName")));
+			promises.push(logUserAction(userProfile.get("username"), product.get("name"), params.itemName));
 		}
 
 		return Parse.Promise.when(promises).then(function (results) {
