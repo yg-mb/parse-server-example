@@ -518,9 +518,9 @@ Parse.Cloud.define("blockUser", function(request, response) {
         }
 								var blockMessage;
         if(blocked){
-        	 blockMessage = "Blocking user :"+username+" by "+blockBy+" due to: "+blockComment;
+        	 blockMessage = "Blocking user:"+username+" by "+blockBy+" due to: "+blockComment;
         }else{
-          blockMessage = "Unblocking user :"+username+" by "+blockBy+" due to: "+blockComment;
+          blockMessage = "Unblocking user:"+username+" by "+blockBy+" due to: "+blockComment;
         }
 								console.log(blockMessage);
 
