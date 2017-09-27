@@ -535,10 +535,10 @@ Parse.Cloud.define("blockUser", function(request, response) {
               return userProfile.save(null, { useMasterKey: true });
             })
           .then( function (){
-              return blockUserContent(username, blocked ? "block": "unblock", blockMessage);
+              return blockUserContent(username, blocked, blockMessage);
              })
           .then( function (){
-              return logUserAction(blockBy, blocked);
+              return logUserAction(blockBy,blocked ? "block": "unblock" );
              })
 		        .then ( function () {
 			          response.success("Updated User: "+ username);
