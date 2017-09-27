@@ -599,5 +599,5 @@ function logUserAction(username, type, action){
 				if(type){
 					actionLog.set("type", type);
 				}
-				return actionLog.save(null, { useMasterKey: true }));
+				return actionLog.save(null, { useMasterKey: true });
 }
