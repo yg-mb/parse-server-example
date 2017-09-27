@@ -512,7 +512,7 @@ Parse.Cloud.define("blockUser", function(request, response) {
         var username =request.params.username;
         var blockBy=request.params.byUser;
         var blockComment=request.params.comment;
-        var blocked=request.params.blocked || true;
+        var blocked=request.params.blocked === undefined ?  true : request.params.blocked;
         if(!blockBy || !blockComment){
          response.error("could not block user"+request.params.username);
         }
