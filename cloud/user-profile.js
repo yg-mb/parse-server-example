@@ -497,7 +497,7 @@ Parse.Cloud.define("updatePortfolioStatus", function(request, response) {
                         useMasterKey:true,
                         success: function(results) {
                         var userProfile = results[0];
-                        userProfile.set("hasNewContent",hasNewContent )
+                        userProfile.set("hasNewContent",hasNewContent );
                         userProfile.save(null, { useMasterKey: true });
                         response.success("userProfile updated for "+ username);
                 },
@@ -524,17 +524,29 @@ Parse.Cloud.define("blockUser", function(request, response) {
         }
 								console.log(blockMessage);
 
+		var promises = [];
+
+		var userQuery =new Parse.Query("_User");
+		userQuery.equalTo("username",username);
+		userQuery.limit(1);
+		promises.push(userQuery.find({useMasterKey:true}));
         UserProfileQuery.equalTo("username",username);
         UserProfileQuery.limit(1);
-        UserProfileQuery.find({useMasterKey:true})
-          .then( function (results){
-             var userProfile = results[0];
-              userProfile.set("blocked",blocked )
-              userProfile.set("blockBy",blockBy )
-              userProfile.set("blockComment",blockComment )
-              return userProfile.save(null, { useMasterKey: true });
-            })
-          .then( function (){
+		promises.push(UserProfileQuery.find({useMasterKey:true}));
+
+		Parse.Promise.when(promises).then( function(results) {
+	//       console.log("user:"+user.toJSON());
+			var user = results[0][0];
+			var userProfile = results[1][0];
+			user.set("blocked",blocked );
+			user.set("blockBy",blockBy );
+			user.set("blockComment",blockComment );
+			userProfile.set("blocked",blocked );
+			return Parse.Promise.when([
+				userProfile.save(null, { useMasterKey: true }),
+				user.save(null, { useMasterKey: true }),
+			]);
+		}).then( function (){
               return blockUserContent(username, blocked);
              })
           .then( function (){
