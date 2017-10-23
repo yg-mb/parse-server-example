@@ -46,7 +46,7 @@ Parse.Cloud.define("incrementBookReport", function(request, response) {
 
 Parse.Cloud.define("incrementFeaturedBookPlay", function(request, response) {
 	var bookQuery =new Parse.Query("PublishedBook");
-
+ var username = request.params.username;
 	var bookId =request.params.bookRemoteId;
 	console.log("search with ids:"+bookId);
 	bookQuery.equalTo("objectId",bookId);
@@ -57,6 +57,7 @@ Parse.Cloud.define("incrementFeaturedBookPlay", function(request, response) {
     		  	var book = results[0];
     			book.increment("playedTimes");
     			book.save(null, { useMasterKey: true });
+    			recordUserBookPlay(username, book, true, false);
     			response.success("incrementBookPlay with Book only");
     		},
     		error: function() {
@@ -68,7 +69,7 @@ Parse.Cloud.define("incrementFeaturedBookPlay", function(request, response) {
 // Use Parse.Cloud.define to define as many cloud functions as you want.
 Parse.Cloud.define("incrementFeaturedBookLike", function(request, response) {
 	var bookQuery =new Parse.Query("PublishedBook");
-
+	var username = request.params.username;
 	var bookId =request.params.bookRemoteId;
 	bookQuery.equalTo("objectId",bookId);
 	bookQuery.limit(1);
@@ -78,6 +79,7 @@ Parse.Cloud.define("incrementFeaturedBookLike", function(request, response) {
     		  	var book = results[0];
     			book.increment("likedTimes");
     			book.save(null, { useMasterKey: true });
+    			recordUserBookPlay(username, book, false, true);
     			response.success("incrementBookLikes with Book only");
     		},
     		error: function() {
@@ -85,3 +87,27 @@ Parse.Cloud.define("incrementFeaturedBookLike", function(request, response) {
     		}
 	});
 });
+
+function recordUserBookPlay(username, book, isRead, isLike){
+				if(username && book){
+								var UserEventClass = Parse.Object.extend("UserEvent");
+        userEvent = new UserEventClass();
+        userEvent.set("username", username);
+        userEvent.set("bookId", book.get("id"));
+        if(book.get("AuthorName")){
+         userEvent.set("AuthorName", book.get("AuthorName"))
+        }
+        if(book.get("category")){
+         userEvent.set("category", book.get("category"))
+        }
+        if(isRead){
+         userEvent.set("read", true);
+        }
+        if(isLike){
+         userEvent.set("like", true);
+        }
+        userEvent.save(null, { useMasterKey: true });
+        console.log("recorded user event:" + userProfile);
+				}
+
+}
