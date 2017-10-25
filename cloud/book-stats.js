@@ -14,7 +14,7 @@ Parse.Cloud.define("incrementFeaturedBookStats", function(request, response) {
         useMasterKey: true
     }).then(function(results) {
         var book = results[0];
-        return updateBookAndUserEvent(book, bookReadAddCount, bookLikeAddCount,  bookRecommendAddCount);
+        return updateBookAndUserEvent(username, book, bookReadAddCount, bookLikeAddCount,  bookRecommendAddCount);
     }).then(function(results) {
         response.success("incrementFeaturedBookStats with Book only");
 
@@ -23,7 +23,7 @@ Parse.Cloud.define("incrementFeaturedBookStats", function(request, response) {
         response.error(error);
     });
 });
-function updateBookAndUserEvent(book, bookReadAddCount, bookLikeAddCount, bookRecommendAddCount){
+function updateBookAndUserEvent(username, book, bookReadAddCount, bookLikeAddCount, bookRecommendAddCount){
         book.increment("playedTimes", bookReadAddCount);
         book.increment("likedTimes", bookLikeAddCount);
         book.increment("recommendTimes", bookRecommendAddCount);
@@ -69,7 +69,7 @@ Parse.Cloud.define("incrementFeaturedBookPlay", function(request, response) {
            useMasterKey: true
        }).then(function(results) {
            var book = results[0];
-           return updateBookAndUserEvent(book, 1, 0, 0);
+           return updateBookAndUserEvent(username, book, 1, 0, 0);
        }).then(function(results) {
            response.success("incrementFeaturedBookStats with Book only");
 
@@ -90,7 +90,7 @@ Parse.Cloud.define("incrementFeaturedBookLike", function(request, response) {
                useMasterKey: true
            }).then(function(results) {
                var book = results[0];
-               return updateBookAndUserEvent(book, 0, 1, 0);
+               return updateBookAndUserEvent(username, book, 0, 1, 0);
            }).then(function(results) {
                response.success("incrementFeaturedBookStats with Book only");
 
