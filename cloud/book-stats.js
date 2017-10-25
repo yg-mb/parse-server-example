@@ -123,7 +123,6 @@ function recordUserEvent(username, book, isRead, isLike, isRecommend) {
         var UserEventClass = Parse.Object.extend("UserEvent");
         userEvent = new UserEventClass();
         userEvent.set("username", username);
-        console.log("recording user event 0 :" + userProfile);
         console.log("recording user event book.id :" + book.id);
         userEvent.set("bookId", book.id);
         console.log("recording user event 1 :" + userProfile);
