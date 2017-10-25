@@ -18,16 +18,18 @@ Parse.Cloud.define("incrementFeaturedBookStats", function(request, response) {
             book.increment("likedTimes", bookLikeAddCount);
             book.increment("recommendTimes", bookRecommendAddCount);
 			var promises = [];
+
 			promises.push(recordUserEvent(username, book, false, true, false));
 			promises.push(book.save(null, {
                 useMasterKey: true
             }));
-			return Parse.Promise.when(promises).then(function(results) {
+   console.log("search with ids:" + bookId);
+			Parse.Promise.when(promises).then(function(results) {
 				response.success("incrementFeaturedBookStats with Book only");
 			}, function(error) {
                 console.log("error:" + error);
                 response.error(error);
-            });
+            }).done();
         },
         error: function() {
             response.error("bookId doesn't exist!" + request.params.bookRemoteId);
