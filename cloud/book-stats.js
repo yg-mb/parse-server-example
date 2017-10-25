@@ -17,11 +17,14 @@ Parse.Cloud.define("incrementFeaturedBookStats", function(request, response) {
             book.increment("playedTimes", bookReadAddCount);
             book.increment("likedTimes", bookLikeAddCount);
             book.increment("recommendTimes", bookRecommendAddCount);
-            book.save(null, {
+			var promises = [];
+			promises.push(recordUserEvent(username, book, false, true, false));
+			promises.push(book.save(null, {
                 useMasterKey: true
-            });
-            recordUserEvent(username, book, bookReadAddCount > 0, bookLikeAddCount > 0, bookRecommendAddCount > 0);
-            response.success("incrementBookStats with Book only");
+            }));
+			Parse.Promise.when(promises).then(function(results) {
+				response.success("incrementFeaturedBookStats with Book only");
+			});
         },
         error: function() {
             response.error("bookId doesn't exist!" + request.params.bookRemoteId);
@@ -64,11 +67,14 @@ Parse.Cloud.define("incrementFeaturedBookPlay", function(request, response) {
         success: function(results) {
             var book = results[0];
             book.increment("playedTimes");
-            book.save(null, {
+			var promises = [];
+			promises.push(recordUserEvent(username, book, false, true, false));
+			promises.push(book.save(null, {
                 useMasterKey: true
-            });
-            recordUserEvent(username, book, true, false, false);
-            response.success("incrementBookPlay with Book only");
+            }));
+			Parse.Promise.when(promises).then(function(results) {
+				response.success("incrementFeaturedBookPlay with Book only");
+			});
         },
         error: function() {
             response.error("bookId doesn't exist!" + request.params.bookRemoteId);
@@ -88,11 +94,15 @@ Parse.Cloud.define("incrementFeaturedBookLike", function(request, response) {
         success: function(results) {
             var book = results[0];
             book.increment("likedTimes");
-            book.save(null, {
+			var promises = [];
+            promises.push(recordUserEvent(username, book, false, true, false));
+			promises.push(book.save(null, {
                 useMasterKey: true
-            });
-            recordUserEvent(username, book, false, true, false);
-            response.success("incrementBookLikes with Book only");
+            }));
+			Parse.Promise.when(promises).then(function(results) {
+				response.success("incrementFeaturedBookLike with Book only");
+			});
+
         },
         error: function() {
             response.error("bookId doesn't exist!" + request.params.bookRemoteId);
@@ -121,10 +131,11 @@ function recordUserEvent(username, book, isRead, isLike, isRecommend) {
         if (isRecommend) {
             userEvent.set("recommend", true);
         }
-        userEvent.save(null, {
+		console.log("recording user event:" + userProfile);
+        return userEvent.save(null, {
             useMasterKey: true
         });
-        console.log("recorded user event:" + userProfile);
+
     }
 
 }
