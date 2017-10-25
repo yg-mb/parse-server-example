@@ -8,8 +8,8 @@ Parse.Cloud.define('hello', function(req, res) {
 });
 
 Parse.Cloud.define('queryTest',function(req, res){
-  	var bookQuery = new Parse.Query("PublishedBook");	
-	
+  	var bookQuery = new Parse.Query("PublishedBook");
+
 	var pages = req.params.pages;
 	var createdAt = req.params.createdAt;
 	var playedTimes = req.params.playedTimes;
@@ -31,7 +31,7 @@ Parse.Cloud.define('queryTest',function(req, res){
 		console.log('加入参数playedTimes');
 		bookQuery.lessThan("playedTimes",playedTimes-0);
 	}
-	
+
 	if( typeof(createdAt)!="undefined"){
 		console.log('加入参数createdAt');
 		var date = new Date(createdAt);
@@ -43,11 +43,11 @@ Parse.Cloud.define('queryTest',function(req, res){
 
 		bookQuery.count({
 			success:function(number){
-		
+
      				console.log('符合条件的文档数为：',number);
 				res.success('符合条件的文档数为：'+number);
 			},
-		
+
 			error:function(error){
 				res.error('请输入正确的参数');
            		}
@@ -56,15 +56,15 @@ Parse.Cloud.define('queryTest',function(req, res){
 		bookQuery.find({
 			success:function(args){
 				for(var i = 0; i < args.length ; i++){
-					book = args[i]
+					book = args[i];
 					console.log(book);
 					book.destroy(book);//删除一本书
 				}
-				res.success('符合条件的文档数为：'+args.length+", 已经将这些数据删除");	
+				res.success('符合条件的文档数为：'+args.length+", 已经将这些数据删除");
 			}
-		});	
+		});
 	}
-})
+});
 
 Parse.Cloud.define("addBookVideoLink", function(request, response) {
 	var bookQuery =new Parse.Query("PublishedBook");

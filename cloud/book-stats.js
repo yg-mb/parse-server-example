@@ -124,7 +124,7 @@ function recordUserEvent(username, book, isRead, isLike, isRecommend) {
         var UserEventClass = Parse.Object.extend("UserEvent");
         userEvent = new UserEventClass();
         userEvent.set("username", username);
-        userEvent.set("bookId", book.get("objectId"));
+        userEvent.set("bookId", book.id);
         if (book.get("AuthorName")) {
             userEvent.set("AuthorName", book.get("AuthorName"));
         }
