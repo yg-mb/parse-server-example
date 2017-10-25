@@ -125,7 +125,6 @@ function recordUserEvent(username, book, isRead, isLike, isRecommend) {
         userEvent.set("username", username);
         console.log("recording user event book.id :" + book.id);
         userEvent.set("bookId", book.id);
-        console.log("recording user event 1 :" + userProfile);
         if (book.get("AuthorName")) {
             userEvent.set("AuthorName", book.get("AuthorName"));
         }
@@ -141,7 +140,6 @@ function recordUserEvent(username, book, isRead, isLike, isRecommend) {
         if (isRecommend) {
             userEvent.set("recommend", true);
         }
-        console.log("recording user event:" + userProfile);
         return userEvent.save(null, {
             useMasterKey: true
         });
