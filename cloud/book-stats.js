@@ -24,7 +24,10 @@ Parse.Cloud.define("incrementFeaturedBookStats", function(request, response) {
             }));
 			Parse.Promise.when(promises).then(function(results) {
 				response.success("incrementFeaturedBookStats with Book only");
-			});
+			}, function(error) {
+                console.log("error:" + error);
+                response.error(error);
+            });
         },
         error: function() {
             response.error("bookId doesn't exist!" + request.params.bookRemoteId);
@@ -74,7 +77,10 @@ Parse.Cloud.define("incrementFeaturedBookPlay", function(request, response) {
             }));
 			Parse.Promise.when(promises).then(function(results) {
 				response.success("incrementFeaturedBookPlay with Book only");
-			});
+			}, function(error) {
+                console.log("error:" + error);
+                response.error(error);
+            });
         },
         error: function() {
             response.error("bookId doesn't exist!" + request.params.bookRemoteId);
