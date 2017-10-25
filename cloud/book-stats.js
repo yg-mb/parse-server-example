@@ -29,12 +29,31 @@ Parse.Cloud.define("incrementFeaturedBookStats", function(request, response) {
 			}, function(error) {
                 console.log("error:" + error);
                 response.error(error);
-            }).done();
+            });
         },
         error: function() {
             response.error("bookId doesn't exist!" + request.params.bookRemoteId);
         }
-    });
+    }).then(function(results) {
+              var book = results[0];
+                book.increment("playedTimes", bookReadAddCount);
+                book.increment("likedTimes", bookLikeAddCount);
+                book.increment("recommendTimes", bookRecommendAddCount);
+    			var promises = [];
+
+    			promises.push(recordUserEvent(username, book, false, true, false));
+    			promises.push(book.save(null, {
+                    useMasterKey: true
+                }));
+       console.log("search with ids:" + bookId);
+    			return Parse.Promise.when(promises);
+			}).then(function(results) {
+            			response.success("incrementFeaturedBookStats with Book only");
+
+            }, function(error) {
+                      console.log("error:" + error);
+                      response.error(error);
+                  });
 });
 
 Parse.Cloud.define("incrementBookReport", function(request, response) {
