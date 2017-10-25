@@ -22,7 +22,7 @@ Parse.Cloud.define("incrementFeaturedBookStats", function(request, response) {
 			promises.push(book.save(null, {
                 useMasterKey: true
             }));
-			Parse.Promise.when(promises).then(function(results) {
+			return Parse.Promise.when(promises).then(function(results) {
 				response.success("incrementFeaturedBookStats with Book only");
 			}, function(error) {
                 console.log("error:" + error);
@@ -75,7 +75,7 @@ Parse.Cloud.define("incrementFeaturedBookPlay", function(request, response) {
 			promises.push(book.save(null, {
                 useMasterKey: true
             }));
-			Parse.Promise.when(promises).then(function(results) {
+			return Parse.Promise.when(promises).then(function(results) {
 				response.success("incrementFeaturedBookPlay with Book only");
 			}, function(error) {
                 console.log("error:" + error);
@@ -105,7 +105,7 @@ Parse.Cloud.define("incrementFeaturedBookLike", function(request, response) {
 			promises.push(book.save(null, {
                 useMasterKey: true
             }));
-			Parse.Promise.when(promises).then(function(results) {
+			return Parse.Promise.when(promises).then(function(results) {
 				response.success("incrementFeaturedBookLike with Book only");
 			}, function(error) {
             console.log("error:" + error);
