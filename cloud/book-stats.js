@@ -71,7 +71,7 @@ Parse.Cloud.define("incrementFeaturedBookPlay", function(request, response) {
            var book = results[0];
            return updateBookAndUserEvent(username, book, 1, 0, 0);
        }).then(function(results) {
-           response.success("incrementFeaturedBookStats with Book only");
+           response.success("incrementFeaturedBookPlay with Book only");
 
        }, function(error) {
            console.log("error:" + error);
@@ -92,7 +92,7 @@ Parse.Cloud.define("incrementFeaturedBookLike", function(request, response) {
                var book = results[0];
                return updateBookAndUserEvent(username, book, 0, 1, 0);
            }).then(function(results) {
-               response.success("incrementFeaturedBookStats with Book only");
+               response.success("incrementFeaturedBookLike with Book only");
 
            }, function(error) {
                console.log("error:" + error);
