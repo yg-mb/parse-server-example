@@ -101,7 +101,10 @@ Parse.Cloud.define("incrementFeaturedBookLike", function(request, response) {
             }));
 			Parse.Promise.when(promises).then(function(results) {
 				response.success("incrementFeaturedBookLike with Book only");
-			});
+			}, function(error) {
+            console.log("error:" + error);
+            response.error(error);
+        });
 
         },
         error: function() {
