@@ -157,7 +157,7 @@ function recordUserEvent(username, book, isRead, isLike, isRecommend) {
             });
 
     }else{
-        return Parse.Promise.done();
+        return Parse.Promise.as();
     }
 
 }
