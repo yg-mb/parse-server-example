@@ -23,17 +23,7 @@ Parse.Cloud.define("incrementFeaturedBookStats", function(request, response) {
         response.error(error);
     });
 });
-function updateBookAndUserEvent(username, book, bookReadAddCount, bookLikeAddCount, bookRecommendAddCount){
-        book.increment("playedTimes", bookReadAddCount);
-        book.increment("likedTimes", bookLikeAddCount);
-        book.increment("recommendTimes", bookRecommendAddCount);
-        var promises = [];
-        promises.push(recordUserEvent(username, book, bookReadAddCount>0, bookLikeAddCount>0, bookRecommendAddCount>0));
-        promises.push(book.save(null, {
-            useMasterKey: true
-        }));
-        return Parse.Promise.when(promises);
-}
+
 
 Parse.Cloud.define("incrementBookReport", function(request, response) {
     var bookQuery = new Parse.Query("PublishedBook");
@@ -100,32 +90,62 @@ Parse.Cloud.define("incrementFeaturedBookLike", function(request, response) {
            });
 });
 
+function updateBookAndUserEvent(username, book, bookReadAddCount, bookLikeAddCount, bookRecommendAddCount){
+        book.increment("playedTimes", bookReadAddCount);
+        book.increment("likedTimes", bookLikeAddCount);
+        book.increment("recommendTimes", bookRecommendAddCount);
+        var promises = [];
+        promises.push(recordUserEvent(username, book, bookReadAddCount>0, bookLikeAddCount>0, bookRecommendAddCount>0));
+        promises.push(book.save(null, {
+            useMasterKey: true
+        }));
+        return Parse.Promise.when(promises);
+}
+
 function recordUserEvent(username, book, isRead, isLike, isRecommend) {
     if (username && book) {
-        var UserEventClass = Parse.Object.extend("UserEvent");
-        userEvent = new UserEventClass();
-        userEvent.set("username", username);
-        console.log("recording user event book.id :" + book.id);
-        userEvent.set("bookId", book.id);
-        if (book.get("AuthorName")) {
-            userEvent.set("AuthorName", book.get("AuthorName"));
-        }
-        if (book.get("category")) {
-            userEvent.set("category", book.get("category"));
-        }
-        if (isRead) {
-            userEvent.set("read", true);
-        }
-        if (isLike) {
-            userEvent.set("like", true);
-        }
-        if (isRecommend) {
-            userEvent.set("recommend", true);
-        }
-        return userEvent.save(null, {
-            useMasterKey: true
-        });
+        var userEventQuery = new Parse.Query("UserEvent");
+        userEventQuery.equalTo("username", username);
+        userEventQuery.equalTo("bookId", book.id);
+        userEventQuery.limit(1);
+        return userEventQuery.find({ useMasterKey: true})
+            .then(function(results) {
+                if(results.length>0){
+                    console.log("updating existing user event book.id :" + book.id);
+                    return Parse.Promise.as(results[0]);
+                }else{
+                    var UserEventClass = Parse.Object.extend("UserEvent");
+                        userEvent = new UserEventClass();
+                        userEvent.set("username", username);
+                        console.log("creating new user event book.id :" + book.id);
+                        userEvent.set("bookId", book.id);
+                        if (book.get("AuthorName")) {
+                            userEvent.set("AuthorName", book.get("AuthorName"));
+                        }
+                        if (book.get("category")) {
+                            userEvent.set("category", book.get("category"));
+                        }
+                    return Parse.Promise.as(userEvent);
+                }
+            })
+            .then(function(userEvent){
+                if (isRead) {
+                    userEvent.set("read", true);
+                }
+                if (isLike) {
+                    userEvent.set("like", true);
+                }
+                if (isRecommend) {
+                    userEvent.set("recommend", true);
+                }
+                console.log("saving user event:" + userEvent);
+                return userEvent.save(null, {
+                    useMasterKey: true
+                });
+            });
 
+    }else{
+        return Parse.Promise.reject("Could not find book or username: "+ book+ ", "+username );
     }
 
 }
