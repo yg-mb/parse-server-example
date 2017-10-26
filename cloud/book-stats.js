@@ -14,7 +14,11 @@ Parse.Cloud.define("incrementFeaturedBookStats", function(request, response) {
         useMasterKey: true
     }).then(function(results) {
         var book = results[0];
-        return updateBookAndUserEvent(username, book, bookReadAddCount, bookLikeAddCount,  bookRecommendAddCount);
+        if(book){
+              return updateBookAndUserEvent(username, book, bookReadAddCount, bookLikeAddCount,  bookRecommendAddCount);
+          }else{
+              return Parse.Promise.reject("Could not find book with id: "+ bookId);
+          }
     }).then(function(results) {
         response.success("incrementFeaturedBookStats with Book only");
 
@@ -59,7 +63,11 @@ Parse.Cloud.define("incrementFeaturedBookPlay", function(request, response) {
            useMasterKey: true
        }).then(function(results) {
            var book = results[0];
-           return updateBookAndUserEvent(username, book, 1, 0, 0);
+            if(book){
+                   return updateBookAndUserEvent(username, book, 1, 0, 0);
+              }else{
+                   return Parse.Promise.reject("Could not find book with id: "+ bookId);
+              }
        }).then(function(results) {
            response.success("incrementFeaturedBookPlay with Book only");
 
