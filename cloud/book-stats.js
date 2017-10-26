@@ -80,7 +80,11 @@ Parse.Cloud.define("incrementFeaturedBookLike", function(request, response) {
                useMasterKey: true
            }).then(function(results) {
                var book = results[0];
-               return updateBookAndUserEvent(username, book, 0, 1, 0);
+               if(book){
+                    return updateBookAndUserEvent(username, book, 0, 1, 0);
+               }else{
+                    return Parse.Promise.reject("Could not find book with id: "+ bookId);
+               }
            }).then(function(results) {
                response.success("incrementFeaturedBookLike with Book only");
 
@@ -145,7 +149,7 @@ function recordUserEvent(username, book, isRead, isLike, isRecommend) {
             });
 
     }else{
-        return Parse.Promise.reject("Could not find book or username: "+ book+ ", "+username );
+        return Parse.Promise.done();
     }
 
 }
