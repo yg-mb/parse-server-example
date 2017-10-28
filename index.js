@@ -1,6 +1,6 @@
 // Example express application adding the parse-server module to expose Parse
 // compatible API routes.
-require ('newrelic');
+//require ('newrelic');
 
 var express = require('express');
 var ParseServer = require('parse-server').ParseServer;
@@ -11,7 +11,7 @@ var OssS3Adapter = require('./lib/oss_s3_adapter');
 
 var path = require('path');
 
-var databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
+var databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI_DEV;
 
 if (!databaseUri) {
   console.log('DATABASE_URI not specified, falling back to localhost.');
@@ -22,28 +22,28 @@ if (!databaseUri) {
 var s3Adapter = new S3Adapter(
                       process.env.AWS_ACCESS_KEY_ID ||"AWS_ACCESS_KEY_ID",
                       process.env.AWS_SECRET_ACCESS_KEY ||"AWS_SECRET_ACCESS_KEY",
-                      process.env.AWS_S3_BUCKET_NAME || 'BUCKET_NAME',
+                      process.env.AWS_S3_BUCKET_NAME_DEV || 'BUCKET_NAME',
                       { directAccess: true }
                     );
 
 var ossAdapter = new OSSAdapter(
-                      process.env.OOS_ACCESS_KEY ||"OSS_ACCESS_KEY_ID",
-                      process.env.OOS_SECRET_KEY ||"OSS_SECRET_ACCESS_KEY",
-                      process.env.OOS_BUCKET || 'OSS_BUCKET_NAME',
+                      process.env.OSS_ACCESS_KEY ||"OSS_ACCESS_KEY_ID",
+                      process.env.OSS_SECRET_KEY ||"OSS_SECRET_ACCESS_KEY",
+                      process.env.OSS_BUCKET_DEV || 'OSS_BUCKET_NAME',
                       { directAccess: true }
                     );
 
 var api = new ParseServer({
   databaseURI: databaseUri || 'mongodb://localhost:27017/dev',
   cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
-  appId: process.env.APP_ID || 'myAppId',
-  fileKey: process.env.FILE_KEY || 'myFileKey',
-  masterKey: process.env.MASTER_KEY || '', //Add your master key here. Keep it secret!
-  serverURL: process.env.SERVER_URL || 'http://localhost:1337/parse',  // Don't forget to change to https if needed
+  appId: process.env.APP_ID_DEV || 'myAppId',
+  fileKey: process.env.FILE_KEY_DEV || 'myFileKey',
+  masterKey: process.env.MASTER_KEY_DEV || '', //Add your master key here. Keep it secret!
+  serverURL: process.env.SERVER_URL_DEV || 'http://localhost:1337/parse',  // Don't forget to change to https if needed
 //  liveQuery: {
 //    classNames: ["Posts", "Comments"] // List of classes to support for query subscriptions
 //  },
-  filesAdapter: new OssS3Adapter(s3Adapter, ossAdapter, s3Adapter)
+  filesAdapter: new OssS3Adapter(s3Adapter, ossAdapter, ossAdapter)
 });
 // Client-keys like the javascript key or the .NET key are not necessary with parse-server
 // If you wish you require them, you can set them as options in the initialization above:
