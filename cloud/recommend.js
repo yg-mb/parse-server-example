@@ -42,14 +42,14 @@ function getRecommendBooks(username){
                  if(authors.has(author)){
                     authors.set(author, authors.get(author)+1);
                  }else{
-                    authors.add(author, 1);
+                    authors.set(author, 1);
                  }
 
                  var category = userEvent.get("category");
 																	if(categories.has(category)){
                     categories.set(category, categories.get(category)+1);
                  }else{
-                    categories.add(category, 1);
+                    categories.set(category, 1);
                  }
               }
            }
