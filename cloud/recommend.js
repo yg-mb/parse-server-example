@@ -1,6 +1,18 @@
 // get recommended books for a user
 Parse.Cloud.define("RecommendBook", function(request, response) {
     var username = request.params.username;
+			return getRecommendBooks(username)
+				.then(function(results) {
+        var responseString = JSON.stringify(results);
+        response.success(responseString);
+    }, function(error) {
+        console.log("error:" + error);
+        response.error(error);
+    });
+});
+
+//return a promise
+function getRecommendBooks(username){
     var promises = [];
 
 				var dateLimit = new Date();
@@ -15,17 +27,15 @@ Parse.Cloud.define("RecommendBook", function(request, response) {
     promises.push(userEventQuery.find());
 
 
-    Parse.Promise.when(promises).then(function(results) {
+    return Parse.Promise.when(promises).then(function(results) {
         //       console.log("user:"+user.toJSON());
         var userEvents = results[0];
-									 console.log("number of events:"+ userEvents.length);
+        var bookIds = [];
+							 console.log("number of events:"+ userEvents.length);
+						  for (var i = 0; i < userEvents.length; i++) {
+              bookIds.push(userEvents[i]);
+           }
 
-       return Parse.Promise.as(userEvents);
-    }).then(function(results) {
-        var responseString = JSON.stringify(results);
-        response.success(responseString);
-    }, function(error) {
-        console.log("error:" + error);
-        response.error(error);
+       return Parse.Promise.as(bookIds);
     });
-});
+}
