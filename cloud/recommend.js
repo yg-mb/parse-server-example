@@ -20,7 +20,6 @@ function getRecommendBooks(username){
 
     console.log("query userEvents for :"+ username);
     var userEventQuery = new Parse.Query("UserEvent");
-    userEventQuery.equalTo("like",true)
     userEventQuery.equalTo("username", username);
     userEventQuery.descending("updatedAt");
     userEventQuery.greaterThan("updatedAt", dateLimit);
@@ -31,12 +30,23 @@ function getRecommendBooks(username){
     return Parse.Promise.when(promises).then(function(results) {
         //       console.log("user:"+user.toJSON());
         var userEvents = results[0];
-        var bookIds = [];
+        var readBookIds = [];
+        var authors = [];
+        var categories = [];
 							 console.log("number of events:"+ userEvents.length);
 						  for (var i = 0; i < userEvents.length; i++) {
-              bookIds.push(userEvents[i].id);
+						      var userEvent = userEvents[i]
+              readBookIds.push(userEvent.get("bookId"));
+              if(userEvent.get("like") || userEvent.get("recommend") ){
+																	authors.push(userEvent.get("AuthorName"));
+																	categories.push(userEvent.get("category"));
+              }
            }
 
-       return Parse.Promise.as(bookIds);
+       return Parse.Promise.as({
+          "readBookIds": readBookIds,
+          "authors" : authors;
+          "categories" : categories
+       });
     });
 }
