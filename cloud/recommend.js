@@ -31,15 +31,26 @@ function getRecommendBooks(username){
         //       console.log("user:"+user.toJSON());
         var userEvents = results[0];
         var readBookIds = [];
-        var authors = [];
-        var categories = [];
+        var authors = new Map(); //author name -> count
+        var categories = new Map(); //category name -> count
 							 console.log("number of events:"+ userEvents.length);
 						  for (var i = 0; i < userEvents.length; i++) {
 						      var userEvent = userEvents[i]
               readBookIds.push(userEvent.get("bookId"));
               if(userEvent.get("like") || userEvent.get("recommend") ){
-																	authors.push(userEvent.get("AuthorName"));
-																	categories.push(userEvent.get("category"));
+                 var author = userEvent.get("AuthorName");
+                 if(authors.has(author)){
+                    authors.set(author, authors.get(author)+1);
+                 }else{
+                    authors.set(author, 1);
+                 }
+
+                 var category = userEvent.get("category");
+																	if(categories.has(category)){
+                    categories.set(category, categories.get(category)+1);
+                 }else{
+                    categories.set(category, 1);
+                 }
               }
            }
 
