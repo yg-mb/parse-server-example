@@ -39,6 +39,7 @@ function getRecommendBooks(username){
               readBookIds.push(userEvent.get("bookId"));
               if(userEvent.get("like") || userEvent.get("recommend") ){
                  var author = userEvent.get("AuthorName");
+                 console.log("author:"+ author);
                  if(authors.has(author)){
                     authors.set(author, authors.get(author)+1);
                  }else{
@@ -46,6 +47,7 @@ function getRecommendBooks(username){
                  }
 
                  var category = userEvent.get("category");
+                  console.log("category:"+ category);
 																	if(categories.has(category)){
                     categories.set(category, categories.get(category)+1);
                  }else{
