@@ -2,6 +2,7 @@ require('./user-profile');
 require('./book-stats');
 require('./admin');
 require('./utils');
+require('./recommend');
 
 Parse.Cloud.define('hello', function(req, res) {
   res.success('Hi from anitales');
