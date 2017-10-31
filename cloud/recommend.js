@@ -60,8 +60,8 @@ function getRecommendBooks(username){
 
        return Parse.Promise.as({
           "readBookIds": readBookIds,
-          "authors" : authors,
-          "categories" : categories
+          "authors" : authors.entries(),
+          "categories" : categories.entries()
        });
     });
 }
