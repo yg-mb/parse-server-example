@@ -1,5 +1,5 @@
 // get recommended books for a user
-Parse.Cloud.define("UserRecommend", function(request, response) {
+Parse.Cloud.define("RecommendBook", function(request, response) {
     var username = request.params.username;
     var promises = [];
 
@@ -10,7 +10,7 @@ Parse.Cloud.define("UserRecommend", function(request, response) {
     var userEventQuery = new Parse.Query("UserEvent");
     userEventQuery.equalTo("username", username);
     userEventQuery.descending("updatedAt");
-    userEventQuery.greatThan("updatedAt", dateLimit);
+    userEventQuery.greaterThan("updatedAt", dateLimit);
 
     promises.push(userEventQuery.find());
 
