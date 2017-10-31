@@ -45,7 +45,7 @@ function getRecommendBooks(username){
 
        return Parse.Promise.as({
           "readBookIds": readBookIds,
-          "authors" : authors;
+          "authors" : authors,
           "categories" : categories
        });
     });
