@@ -46,6 +46,7 @@ function getRecommendBooks(username){
                     authors.set(author, 1);
                  }
                  console.log(author+ ":"+ authors.get(author));
+                 console.log("authors:"+ JSON.stringify(authors.entries()));
 
                  var category = userEvent.get("category");
                   console.log("category:"+ category);
@@ -54,7 +55,7 @@ function getRecommendBooks(username){
                  }else{
                     categories.set(category, 1);
                  }
-                 console.log("categories:"+ JSON.stringify(categories));
+                 console.log("categories:"+ JSON.stringify(categories.entries()));
               }
            }
 
