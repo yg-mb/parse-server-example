@@ -56,7 +56,7 @@ function getRecommendBooks(username) {
             var topBooksByCategory = results[2];
             var newBooksByCategory = results[3];
 
-            var bookMapFunction = function(){
+            var bookMapFunction = function(a){
                 return JSON.stringify({id: a.id, title: a.get("title")});
             }
 
