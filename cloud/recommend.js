@@ -189,6 +189,12 @@ function getUserReadPreferences(userEvents) {
          }
     };
     categories.sort();
+
+    //take top random 4 of top 8
+    authors = authors.slice(0, 2*MAX_NUMBER_OF_BOOKS_PER_GROUP);
+    categories = categories.slice(0, 2*MAX_NUMBER_OF_BOOKS_PER_GROUP);
+    shuffleArray(authors);
+    shuffleArray(categories);
     authors = authors.slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP);
     categories = categories.slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP);
 
@@ -204,4 +210,11 @@ function getUserReadPreferences(userEvents) {
         "categories": categories
     });
 
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
 }
