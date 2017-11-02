@@ -158,17 +158,27 @@ function getUserReadPreferences(userEvents) {
     var authors = [...authorMap].slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP*2);
     var categories = [...categoryMap].slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP);
 
-    console.log("authors:"+ authors);
-    console.log("categories:"+ categories);
+    console.log("authors:"+ JSON.stringify(authors));
+    console.log("categories:"+ JSON.stringify(categories));
     authors.sort = function(a,b) {
-        return a[1]>b[1]? 1:a[1]<b[1]?-1:0;
+        if(a && b){
+            return a[1]>b[1]? 1:a[1]<b[1]?-1:0;
+        }else{
+            return 0;
+        }
     };
     authors.sort();
 
     categories.sort = function(a,b) {
-        return a[1]>b[1]? 1:a[1]<b[1]?-1:0;
+      if(a && b){
+             return a[1]>b[1]? 1:a[1]<b[1]?-1:0;
+         }else{
+             return 0;
+         }
     };
     categories.sort();
+    console.log("authors:"+ authors);
+    console.log("categories:"+ categories);
     //todo only keep first n results of authors and categories
     return Parse.Promise.as({
         "readBookIds": readBookIds,
