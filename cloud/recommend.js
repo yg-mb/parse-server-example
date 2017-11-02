@@ -132,7 +132,7 @@ function getUserReadPreferences(userEvents) {
     console.log("number of events:" + userEvents.length);
     for (var i = 0; i < userEvents.length; i++) {
         var userEvent = userEvents[i];
-        if(userEvent.get("bookId")){}
+        if(userEvent.get("bookId")){
             readBookIds.push(userEvent.get("bookId"));
         }
         if (userEvent.get("like") || userEvent.get("recommend")) {
