@@ -183,6 +183,9 @@ function getUserReadPreferences(userEvents) {
     categories.sort();
     authors = authors.slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP);
     categories = categories.slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP);
+
+    authors = authors.map(function(a) { return a[0];});
+    categories = categories.map(function(a) { return a[0];});
     console.log("sorted authors:"+ authors);
     console.log("sorted categories:"+ categories);
 
