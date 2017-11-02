@@ -55,10 +55,10 @@ function getRecommendBooks(username) {
             var newBooksByAuthor = results[1];
             var topBooksByCategory = results[2];
             var newBooksByCategory = results[3];
-             console.log("topBooksByAuthor:"+topBooksByAuthor.map(function(a) { return {a.id, a.get("title")};)),
-             console.log("newBooksByAuthor:"+newBooksByAuthor.map(function(a) { return {a.id, a.get("title")};)),
-             console.log("topBooksByCategory:"+topBooksByCategory.map(function(a) { return {a.id, a.get("title")};)),
-             console.log("newBooksByCategory:"+newBooksByCategory.map(function(a) { return {a.id, a.get("title")};)),
+             console.log("topBooksByAuthor:"+topBooksByAuthor.map(function(a) { return {id: a.id, title: a.get("title")};));
+             console.log("newBooksByAuthor:"+newBooksByAuthor.map(function(a) { return {id: a.id, title: a.get("title")};));
+             console.log("topBooksByCategory:"+topBooksByCategory.map(function(a) { return {id: a.id, title: a.get("title")};));
+             console.log("newBooksByCategory:"+newBooksByCategory.map(function(a) { return {id: a.id, title: a.get("title")};));
             return Parse.Promise.as({
                 "topBooksByAuthor": topBooksByAuthor.map(function(a) { return a.id;}),
                 "newBooksByAuthor": newBooksByAuthor.map(function(a)  { return a.id;}),
