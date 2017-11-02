@@ -60,10 +60,10 @@ function getRecommendBooks(username) {
                 return JSON.stringify({id: a.id, title: a.get("title")});
             }
 
-             console.log("topBooksByAuthor:"+topBooksByAuthor.map(bookMapFunction);
-             console.log("newBooksByAuthor:"+newBooksByAuthor.map(bookMapFunction);
-             console.log("topBooksByCategory:"+topBooksByCategory.map(bookMapFunction);
-             console.log("newBooksByCategory:"+newBooksByCategory.map(bookMapFunction);
+             console.log("topBooksByAuthor:"+topBooksByAuthor.map(bookMapFunction));
+             console.log("newBooksByAuthor:"+newBooksByAuthor.map(bookMapFunction));
+             console.log("topBooksByCategory:"+topBooksByCategory.map(bookMapFunction));
+             console.log("newBooksByCategory:"+newBooksByCategory.map(bookMapFunction));
             return Parse.Promise.as({
                 "topBooksByAuthor": topBooksByAuthor.map(function(a) { return a.id;}),
                 "newBooksByAuthor": newBooksByAuthor.map(function(a)  { return a.id;}),
