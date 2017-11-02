@@ -41,7 +41,7 @@ function getRecommendBooks(username) {
             return getUserReadPreferences(userEvents);
         }).then(function(results) {
             var readBookIds = results.readBookIds;
-            var authors = results.authors.filter(e => e !== username);;
+            var authors = results.authors.filter(e => e !== username);
             var categories = results.categories;
             console.log("creating recommendBookPromises");
             var recommendBookPromises = [];
