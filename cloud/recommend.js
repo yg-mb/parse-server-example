@@ -43,7 +43,7 @@ function getRecommendBooks(username) {
             var readBookIds = results.readBookIds;
             var authors = results.authors;
             var categories = results.categories;
-
+            console.log("creating recommendBookPromises");
             var recommendBookPromises = [];
             recommendBookPromises.push(getRecommendTopBooksByAuthor(readBookIds, authors, dateLimit));
             recommendBookPromises.push(getRecommendNewBooksByAuthor(readBookIds, authors, dateLimit));
@@ -55,6 +55,7 @@ function getRecommendBooks(username) {
             var newBooksByAuthor = results[1];
             var topBooksByCategory = results[2];
             var newBooksByCategory = results[3];
+             console.log("combine results");
             return Parse.Promise.as({
                 "topBooksByAuthor": topBooksByAuthor,
                 "newBooksByAuthor": newBooksByAuthor,
