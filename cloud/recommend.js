@@ -67,6 +67,7 @@ function getRecommendBooks(username) {
 
 //best books of authors
 function getRecommendTopBooksByAuthor(readBookIds, authors, dateLimit){
+    console.log("query best books of authors:"+ authors);
     var bookQuery = new Parse.Query("PublishedBook");
     bookQuery.notEqualTo("active",false);   //not removed
     bookQuery.containedIn("AuthorName", authors);   //within authors
@@ -82,6 +83,7 @@ function getRecommendTopBooksByAuthor(readBookIds, authors, dateLimit){
 
 //recent new books of authors
 function getRecommendNewBooksByAuthor(readBookIds, authors, dateLimit){
+    console.log("query new books of authors:"+ authors);
     var bookQuery = new Parse.Query("PublishedBook");
     bookQuery.notEqualTo("active",false);   //not removed
     bookQuery.containedIn("AuthorName", authors);   //within authors
@@ -96,6 +98,7 @@ function getRecommendNewBooksByAuthor(readBookIds, authors, dateLimit){
 }
 //best recent books of categories
 function getRecommendTopBooksByCategory(readBookIds, categories, dateLimit){
+    console.log("query best books of categories:"+ categories);
     var bookQuery = new Parse.Query("PublishedBook");
     bookQuery.notEqualTo("active",false);    //not removed
     bookQuery.containedIn("category", categories); //within categories
@@ -110,6 +113,7 @@ function getRecommendTopBooksByCategory(readBookIds, categories, dateLimit){
 
 //recent new books of categories
 function getRecommendNewBooksByCategory(readBookIds, categories, dateLimit){
+    console.log("query new books of categories:"+ categories);
     var bookQuery = new Parse.Query("PublishedBook");
     bookQuery.notEqualTo("active",false);               //not removed
     bookQuery.containedIn("category", categories);      //within categories
@@ -155,8 +159,8 @@ function getUserReadPreferences(userEvents) {
             }
         }
     }
-    var authors = [...authorMap].slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP*2);
-    var categories = [...categoryMap].slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP);
+    var authors = [...authorMap];
+    var categories = [...categoryMap];
 
     console.log("authors:"+ JSON.stringify(authors));
     console.log("categories:"+ JSON.stringify(categories));
@@ -177,8 +181,11 @@ function getUserReadPreferences(userEvents) {
          }
     };
     categories.sort();
-    console.log("authors:"+ authors);
-    console.log("categories:"+ categories);
+    authors = authors.slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP);
+    categories = categories.slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP);
+    console.log("sorted authors:"+ authors);
+    console.log("sorted categories:"+ categories);
+
     //todo only keep first n results of authors and categories
     return Parse.Promise.as({
         "readBookIds": readBookIds,
