@@ -158,6 +158,8 @@ function getUserReadPreferences(userEvents) {
     var authors = [...authorMap].slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP*2);
     var categories = [...categoryMap].slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP);
 
+    console.log("authors:"+ authors);
+    console.log("categories:"+ categories);
     authors.sort = function(a,b) {
         return a[1]>b[1]? 1:a[1]<b[1]?-1:0;
     };
