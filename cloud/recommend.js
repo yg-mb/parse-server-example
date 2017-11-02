@@ -57,10 +57,10 @@ function getRecommendBooks(username) {
             var newBooksByCategory = results[3];
              console.log("combine results");
             return Parse.Promise.as({
-                "topBooksByAuthor": topBooksByAuthor,
-                "newBooksByAuthor": newBooksByAuthor,
-                "topBooksByCategory": topBooksByCategory,
-                "newBooksByCategory": newBooksByCategory
+                "topBooksByAuthor": topBooksByAuthor.map(function(a) { return {a.id, a.get("title");}),
+                "newBooksByAuthor": newBooksByAuthor.map(function(a) { return {a.id, a.get("title");}),
+                "topBooksByCategory": topBooksByCategory.map(function(a) { return {a.id, a.get("title");}),
+                "newBooksByCategory": newBooksByCategory.map(function(a) { return {a.id, a.get("title");})
             });
         });
 }
