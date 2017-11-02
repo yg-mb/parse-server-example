@@ -132,20 +132,26 @@ function getUserReadPreferences(userEvents) {
     console.log("number of events:" + userEvents.length);
     for (var i = 0; i < userEvents.length; i++) {
         var userEvent = userEvents[i];
-        readBookIds.push(userEvent.get("bookId"));
+        if(userEvent.get("bookId")){}
+            readBookIds.push(userEvent.get("bookId"));
+        }
         if (userEvent.get("like") || userEvent.get("recommend")) {
             var author = userEvent.get("AuthorName");
-            if (authorMap.has(author)) {
-                authorMap.set(author, authorMap.get(author) + 1);
-            } else {
-                authorMap.set(author, 1);
+            if(author){
+                if (authorMap.has(author)) {
+                    authorMap.set(author, authorMap.get(author) + 1);
+                } else {
+                    authorMap.set(author, 1);
+                }
             }
 
             var category = userEvent.get("category");
-            if (categoryMap.has(category)) {
-                categoryMap.set(category, categoryMap.get(category) + 1);
-            } else {
-                categoryMap.set(category, 1);
+            if(category){
+                if (categoryMap.has(category)) {
+                    categoryMap.set(category, categoryMap.get(category) + 1);
+                } else {
+                    categoryMap.set(category, 1);
+                }
             }
         }
     }
