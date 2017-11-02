@@ -55,12 +55,15 @@ function getRecommendBooks(username) {
             var newBooksByAuthor = results[1];
             var topBooksByCategory = results[2];
             var newBooksByCategory = results[3];
-             console.log("combine results");
+             console.log("topBooksByAuthor:"+topBooksByAuthor.map(function(a) { return {a.id, a.get("title")};)),
+             console.log("newBooksByAuthor:"+newBooksByAuthor.map(function(a) { return {a.id, a.get("title")};)),
+             console.log("topBooksByCategory:"+topBooksByCategory.map(function(a) { return {a.id, a.get("title")};)),
+             console.log("newBooksByCategory:"+newBooksByCategory.map(function(a) { return {a.id, a.get("title")};)),
             return Parse.Promise.as({
-                "topBooksByAuthor": topBooksByAuthor.map(function(a) { return {a.id, a.get("title");}),
-                "newBooksByAuthor": newBooksByAuthor.map(function(a) { return {a.id, a.get("title");}),
-                "topBooksByCategory": topBooksByCategory.map(function(a) { return {a.id, a.get("title");}),
-                "newBooksByCategory": newBooksByCategory.map(function(a) { return {a.id, a.get("title");})
+                "topBooksByAuthor": topBooksByAuthor.map(function(a) { return a.id;}),
+                "newBooksByAuthor": newBooksByAuthor.map(function(a)  { return a.id;}),
+                "topBooksByCategory": topBooksByCategory.map(function(a) { return a.id;}),
+                "newBooksByCategory": newBooksByCategory.map(function(a)  { return a.id;})
             });
         });
 }
