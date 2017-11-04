@@ -1,9 +1,10 @@
-"use strict";
+ /*jshint esversion: 6 */
+
 
 // get recommended books for a user
 const MAX_NUMBER_OF_DAYS = 60;
 const MAX_NUMBER_OF_BOOKS_PER_GROUP = 4;
-const MAX_NUMBER_OF_READ = 10;
+const MAX_NUMBER_OF_READ = 20;
 const MIN_NUMBER_OF_PAGE = 5;
 
 Parse.Cloud.define("RecommendBook", function(request, response) {
@@ -51,6 +52,10 @@ function getRecommendBooks(username) {
             recommendBookPromises.push(getRecommendNewBooksByCategory(readBookIds, categories, dateLimit));
             return Parse.Promise.when(recommendBookPromises);
         }).then(function(results) {
+            for (var i = 0; i < results.length; i++) {
+                shuffleArray(results[i]);
+                results[i] = results[i].slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP);
+            }
             var topBooksByAuthor = results[0];
             var newBooksByAuthor = results[1];
             var topBooksByCategory = results[2];
@@ -58,7 +63,7 @@ function getRecommendBooks(username) {
 
             var bookMapFunction = function(a){
                 return JSON.stringify({id: a.id, title: a.get("title")});
-            }
+            };
 
              console.log("topBooksByAuthor:"+topBooksByAuthor.map(bookMapFunction));
              console.log("newBooksByAuthor:"+newBooksByAuthor.map(bookMapFunction));
@@ -81,7 +86,7 @@ function getRecommendTopBooksByAuthor(readBookIds, authors, dateLimit){
     bookQuery.containedIn("AuthorName", authors);   //within authors
     bookQuery.notContainedIn("objectId",readBookIds);   //not read by me
     // bookQuery.greaterThan("publish_date", dateLimit);
-    bookQuery.limit(MAX_NUMBER_OF_BOOKS_PER_GROUP);
+    bookQuery.limit(MAX_NUMBER_OF_BOOKS_PER_GROUP*2);
     bookQuery.descending("likedTimes"); //top liked by others
 
     return bookQuery.find({
@@ -97,7 +102,7 @@ function getRecommendNewBooksByAuthor(readBookIds, authors, dateLimit){
     bookQuery.containedIn("AuthorName", authors);   //within authors
     bookQuery.notContainedIn("objectId",readBookIds);   //not read by me
     bookQuery.greaterThan("publish_date", dateLimit);    //recently published
-    bookQuery.limit(MAX_NUMBER_OF_BOOKS_PER_GROUP);
+    bookQuery.limit(MAX_NUMBER_OF_BOOKS_PER_GROUP*2);
     bookQuery.descending("publish_date");    //recently published
 
     return bookQuery.find({
@@ -112,7 +117,7 @@ function getRecommendTopBooksByCategory(readBookIds, categories, dateLimit){
     bookQuery.containedIn("category", categories); //within categories
     bookQuery.notContainedIn("objectId",readBookIds); //not read by me
     bookQuery.greaterThan("publish_date", dateLimit); //recently published
-    bookQuery.limit(MAX_NUMBER_OF_BOOKS_PER_GROUP);
+    bookQuery.limit(MAX_NUMBER_OF_BOOKS_PER_GROUP*2);
     bookQuery.descending("likedTimes"); // top liked by others
     return bookQuery.find({
                useMasterKey: true
@@ -129,7 +134,7 @@ function getRecommendNewBooksByCategory(readBookIds, categories, dateLimit){
     bookQuery.lessThan("playedTimes", MAX_NUMBER_OF_READ);  //not read by many others
     bookQuery.greaterThan("publish_date", dateLimit);   //recently published
     bookQuery.greaterThan("pages", MIN_NUMBER_OF_PAGE);     //book not too short
-    bookQuery.limit(MAX_NUMBER_OF_BOOKS_PER_GROUP);
+    bookQuery.limit(MAX_NUMBER_OF_BOOKS_PER_GROUP*2);
     bookQuery.descending("recommendTimes");     // top recommended by others
 
     return bookQuery.find({
@@ -192,11 +197,11 @@ function getUserReadPreferences(userEvents) {
 
     //take top random 4 of top 8
     authors = authors.slice(0, 2*MAX_NUMBER_OF_BOOKS_PER_GROUP);
-    categories = categories.slice(0, 2*MAX_NUMBER_OF_BOOKS_PER_GROUP);
-    shuffleArray(authors);
-    shuffleArray(categories);
-    authors = authors.slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP);
     categories = categories.slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP);
+    shuffleArray(authors);
+//    shuffleArray(categories);
+    authors = authors.slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP);
+//    categories = categories.slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP);
 
     authors = authors.map(function(a) { return a[0];});
     categories = categories.map(function(a) { return a[0];});
