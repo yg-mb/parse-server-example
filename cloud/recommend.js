@@ -6,6 +6,7 @@ const MAX_NUMBER_OF_DAYS = 60;
 const MAX_NUMBER_OF_BOOKS_PER_GROUP = 4;
 const MAX_NUMBER_OF_READ = 20;
 const MIN_NUMBER_OF_PAGE = 5;
+const MIN_NUMBER_OF_PAGE = 5;
 
 Parse.Cloud.define("RecommendBook", function(request, response) {
     var username = request.params.username;
@@ -41,9 +42,26 @@ function getRecommendBooks(username) {
             var userEvents = results[0];
             return getUserReadPreferences(userEvents);
         }).then(function(results) {
-            var readBookIds = results.readBookIds;
             var authors = results.authors.filter(e => e !== username);
             var categories = results.categories;
+            var readBookIds = results.readBookIds;
+            var resultsPromises = [];
+            if(authors.length >0){
+                resultsPromises.push(Parse.Promise.as(authors));
+            }else{
+                // if no authors, use top author
+                resultsPromises.push(Parse.Promise.as(["sarahness","crystalgaming9","willowteddyboo", "piepiediva","kinda","major_wolf","powell24","chip","brianacute","sharpie"])));
+            }
+             if(categories.length >0){
+                resultsPromises.push(Parse.Promise.as(categories));
+            }else{
+                // if no category, use top category
+                resultsPromises.push(Parse.Promise.as(["Comedy","Adventure","Singing", "Fantasy", "Humor"]));
+            }
+            resultsPromises.push(Parse.Promise.as(readBookIds));
+            return Parse.Promise.when(resultsPromises);
+
+        }).then(function(authors, categories, readBookIds) {
             console.log("creating recommendBookPromises");
             var recommendBookPromises = [];
             recommendBookPromises.push(getRecommendTopBooksByAuthor(readBookIds, authors, dateLimit));
@@ -222,4 +240,8 @@ function shuffleArray(array) {
         let j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
