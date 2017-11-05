@@ -6,7 +6,6 @@ const MAX_NUMBER_OF_DAYS = 60;
 const MAX_NUMBER_OF_BOOKS_PER_GROUP = 4;
 const MAX_NUMBER_OF_READ = 20;
 const MIN_NUMBER_OF_PAGE = 5;
-const MIN_NUMBER_OF_PAGE = 5;
 
 Parse.Cloud.define("RecommendBook", function(request, response) {
     var username = request.params.username;
