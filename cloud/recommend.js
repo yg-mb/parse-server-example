@@ -49,7 +49,7 @@ function getRecommendBooks(username) {
                 resultsPromises.push(Parse.Promise.as(authors));
             }else{
                 // if no authors, use top author
-                resultsPromises.push(Parse.Promise.as(["sarahness","crystalgaming9","willowteddyboo", "piepiediva","kinda","major_wolf","powell24","chip","brianacute","sharpie"])));
+                resultsPromises.push(Parse.Promise.as(["sarahness","crystalgaming9","willowteddyboo", "piepiediva","kinda","major_wolf","powell24","chip","brianacute","sharpie"]));
             }
              if(categories.length >0){
                 resultsPromises.push(Parse.Promise.as(categories));
