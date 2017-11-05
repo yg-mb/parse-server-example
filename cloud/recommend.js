@@ -60,7 +60,10 @@ function getRecommendBooks(username) {
             resultsPromises.push(Parse.Promise.as(readBookIds));
             return Parse.Promise.when(resultsPromises);
 
-        }).then(function(authors, categories, readBookIds) {
+        }).then(function(results ) {
+            authors = results[0];
+            categories = results[1];
+            readBookIds = results[2];
             console.log("creating recommendBookPromises");
             var recommendBookPromises = [];
             recommendBookPromises.push(getRecommendTopBooksByAuthor(readBookIds, authors, dateLimit));
