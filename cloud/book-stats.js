@@ -115,7 +115,7 @@ Parse.Cloud.define("getMySavedBookIds", function(request, response) {
     userEventQuery.find({
                useMasterKey: true
            }).then(function(results) {
-               var bookIds = results.map(function(a) { return a.bookId;});
+               var bookIds = results.map(function(a) { return a.get("bookId");});
                var responseString = JSON.stringify(bookIds);
                response.success(responseString);
            }, function(error) {
