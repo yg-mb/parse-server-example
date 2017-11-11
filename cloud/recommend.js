@@ -172,7 +172,7 @@ function getUserReadPreferences(userEvents) {
         if(userEvent.get("bookId")){
             readBookIds.push(userEvent.get("bookId"));
         }
-        if (userEvent.get("like") || userEvent.get("recommend")) {
+        if (userEvent.get("like") || userEvent.get("recommend")|| userEvent.get("save")) {
             var author = userEvent.get("AuthorName");
             if(author){
                 if (authorMap.has(author)) {

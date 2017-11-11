@@ -1,4 +1,6 @@
-Parse.Cloud.define("incrementFeaturedBookStats", function(request, response) {
+ /*jshint esversion: 6 */
+
+ Parse.Cloud.define("incrementFeaturedBookStats", function(request, response) {
     var bookQuery = new Parse.Query("PublishedBook");
 
     var bookId = request.params.bookRemoteId;
@@ -15,7 +17,7 @@ Parse.Cloud.define("incrementFeaturedBookStats", function(request, response) {
     }).then(function(results) {
         var book = results[0];
         if(book){
-              return updateBookAndUserEvent(username, book, bookReadAddCount, bookLikeAddCount,  bookRecommendAddCount);
+              return updateBookAndUserEvent(username, book, bookReadAddCount, bookLikeAddCount,  bookRecommendAddCount, null);
           }else{
               return Parse.Promise.reject("Could not find book with id: "+ bookId);
           }
@@ -64,7 +66,7 @@ Parse.Cloud.define("incrementFeaturedBookPlay", function(request, response) {
        }).then(function(results) {
            var book = results[0];
             if(book){
-                   return updateBookAndUserEvent(username, book, 1, 0, 0);
+                   return updateBookAndUserEvent(username, book, 1, 0, 0, null);
               }else{
                    return Parse.Promise.reject("Could not find book with id: "+ bookId);
               }
@@ -75,6 +77,51 @@ Parse.Cloud.define("incrementFeaturedBookPlay", function(request, response) {
            console.log("error:" + error);
            response.error(error);
        });
+});
+
+Parse.Cloud.define("updateBookSaveStatus", function(request, response) {
+    var bookQuery = new Parse.Query("PublishedBook");
+    var username = request.params.username;
+    var bookId = request.params.bookRemoteId;
+    var saved = request.params.saved;
+    console.log("search with ids:" + bookId);
+    bookQuery.equalTo("objectId", bookId);
+    bookQuery.limit(1);
+    bookQuery.find({
+           useMasterKey: true
+       }).then(function(results) {
+           var book = results[0];
+            if(book){
+                   return updateBookAndUserEvent(username, book, 0, 0, 0, saved);
+              }else{
+                   return Parse.Promise.reject("Could not find book with id: "+ bookId);
+              }
+       }).then(function(results) {
+           response.success("updateBookSaveStatus with Book");
+
+       }, function(error) {
+           console.log("error:" + error);
+           response.error(error);
+       });
+});
+
+// Use Parse.Cloud.define to define as many cloud functions as you want.
+Parse.Cloud.define("getMySavedBookIds", function(request, response) {
+    var username = request.params.username;
+    var userEventQuery = new Parse.Query("UserEvent");
+    userEventQuery.equalTo("username", username);
+    userEventQuery.equalTo("save", true);
+    userEventQuery.descending("updatedAt");
+    userEventQuery.find({
+               useMasterKey: true
+           }).then(function(results) {
+               var bookIds = results.map(function(a) { return a.id;});
+               var responseString = JSON.stringify(bookIds);
+               response.success(responseString);
+           }, function(error) {
+               console.log("error:" + error);
+               response.error(error);
+           });
 });
 
 // Use Parse.Cloud.define to define as many cloud functions as you want.
@@ -89,7 +136,7 @@ Parse.Cloud.define("incrementFeaturedBookLike", function(request, response) {
            }).then(function(results) {
                var book = results[0];
                if(book){
-                    return updateBookAndUserEvent(username, book, 0, 1, 0);
+                    return updateBookAndUserEvent(username, book, 0, 1, 0, null);
                }else{
                     return Parse.Promise.reject("Could not find book with id: "+ bookId);
                }
@@ -102,19 +149,23 @@ Parse.Cloud.define("incrementFeaturedBookLike", function(request, response) {
            });
 });
 
-function updateBookAndUserEvent(username, book, bookReadAddCount, bookLikeAddCount, bookRecommendAddCount){
+
+function updateBookAndUserEvent(username, book, bookReadAddCount, bookLikeAddCount, bookRecommendAddCount, bookSaved){
         book.increment("playedTimes", bookReadAddCount);
         book.increment("likedTimes", bookLikeAddCount);
         book.increment("recommendTimes", bookRecommendAddCount);
+        if(bookSaved){
+            book.increment("savedTimes", 1);
+        }
         var promises = [];
-        promises.push(recordUserEvent(username, book, bookReadAddCount>0, bookLikeAddCount>0, bookRecommendAddCount>0));
+        promises.push(recordUserEvent(username, book, bookReadAddCount>0, bookLikeAddCount>0, bookRecommendAddCount>0, bookSaved));
         promises.push(book.save(null, {
             useMasterKey: true
         }));
         return Parse.Promise.when(promises);
 }
 
-function recordUserEvent(username, book, isRead, isLike, isRecommend) {
+function recordUserEvent(username, book, isRead, isLike, isRecommend, isSaved) {
     if (username && book) {
         var userEventQuery = new Parse.Query("UserEvent");
         userEventQuery.equalTo("username", username);
@@ -149,6 +200,10 @@ function recordUserEvent(username, book, isRead, isLike, isRecommend) {
                 }
                 if (isRecommend) {
                     userEvent.set("recommend", true);
+                }
+
+                if (isSaved !== null) {
+                    userEvent.set("save", isSaved);
                 }
                 console.log("saving user event:" + userEvent);
                 return userEvent.save(null, {
