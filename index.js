@@ -60,7 +60,11 @@ app.use(mountPath, api);
 
 // Parse Server plays nicely with the rest of your web routes
 app.get('/', function(req, res) {
+<<<<<<< HEAD
   res.status(200).send('Ok!');
+=======
+  res.status(200).send('200');
+>>>>>>> master
 });
 
 // There will be a test page available on the /test path of your server url
