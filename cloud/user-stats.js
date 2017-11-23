@@ -19,7 +19,12 @@
              }
          })
          .then(function(results) {
-             response.success("updated:" + username);
+            if(results){
+                response.success("updated:" + username);
+            }else{
+               response.error("not found:"+ username);
+            }
+
          }, function(error) {
              console.log("error:" + error);
              response.error(error);
