@@ -1,5 +1,5 @@
  /*jshint esversion: 6 */
- Parse.Cloud.define("incrementUserStats", function(request, response) {
+ Parse.Cloud.define("incrementUserVisits", function(request, response) {
      var username = request.params.username;
      var visit = request.params.visit;
      var userQuery = new Parse.Query("_User");
