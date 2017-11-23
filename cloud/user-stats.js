@@ -64,7 +64,7 @@ Parse.Cloud.define("incrementUserLikes", function(request, response) {
                      user.increment("userLikes");
                  }else if( !like && userEvent.get("like")){
                      userEvent.set("like",false);
-                     user.decrement("userLikes");
+                     user.increment("userLikes", -1);
                  }
                  promises.push(userEvent.save(null, {
                      useMasterKey: true
