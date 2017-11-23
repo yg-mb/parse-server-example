@@ -50,10 +50,10 @@ Parse.Cloud.define("incrementUserLikes", function(request, response) {
 
      return Parse.Promise.when(promises)
          .then(function(results) {
-             //       console.log("user:"+user.toJSON());
              var user= results[0];
              var userEvent = results[1];
              promises = [];
+             console.log("user:"+user.toJSON());
              if(user){
                  if(like){
                      user.increment("userLikes");
