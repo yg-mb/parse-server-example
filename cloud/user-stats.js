@@ -54,24 +54,17 @@ Parse.Cloud.define("incrementUserLikes", function(request, response) {
              var userEvent = results[1][0];
              promises = [];
              console.log("user:"+ JSON.stringify(user));
-             if(user){
-                 if(like){
-                     user.increment("userLikes");
-                 }else{
-                     user.decrement("userLikes");
-                 }
-                 promises.push(user.save(null, {
-                     useMasterKey: true
-                 }));
-             }else{
-                  throw new Error('User not found:'+username);
+             if(!user){
+                 throw new Error('User not found:'+username);
              }
 
              if(userEvent){
-                 if(like){
+                 if(like && !userEvent.get("like")){
                      userEvent.set("like",true);
-                 }else{
+                     user.increment("userLikes");
+                 }else if( !like && userEvent.get("like")){
                      userEvent.set("like",false);
+                     user.decrement("userLikes");
                  }
                  promises.push(userEvent.save(null, {
                      useMasterKey: true
@@ -80,9 +73,10 @@ Parse.Cloud.define("incrementUserLikes", function(request, response) {
                  var UserEventClass = Parse.Object.extend("UserLikeEvent");
                      userEvent = new UserEventClass();
                      userEvent.set("username", likedByUsername);
-                      userEvent.set("AuthorName", username);
+                     userEvent.set("AuthorName", username);
                      if(like){
                          userEvent.set("like",true);
+                         user.increment("userLikes");
                      }else{
                          userEvent.set("like",false);
                      }
@@ -90,6 +84,9 @@ Parse.Cloud.define("incrementUserLikes", function(request, response) {
                      useMasterKey: true
                  }));
              }
+             promises.push(user.save(null, {
+                                 useMasterKey: true
+                             }));
              return Parse.Promise.when(promises);
          })
          .then(function(results) {
