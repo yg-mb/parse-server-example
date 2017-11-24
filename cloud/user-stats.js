@@ -53,7 +53,7 @@ Parse.Cloud.define("incrementUserLikes", function(request, response) {
              var user= results[0][0];
              var userEvent = results[1][0];
              promises = [];
-             console.log("user:"+ JSON.stringify(user));
+//             console.log("user:"+ JSON.stringify(user));
              if(!user){
                  throw new Error('User not found:'+username);
              }
@@ -96,6 +96,22 @@ Parse.Cloud.define("incrementUserLikes", function(request, response) {
                response.error("not found:"+ username);
             }
 
+         }, function(error) {
+             console.log("error:" + error);
+             response.error(error);
+         });
+ });
+
+
+Parse.Cloud.define("getLikedAuthors", function(request, response) {
+   var username = request.params.username;
+   var userEventQuery = new Parse.Query("UserLikeEvent");
+   userEventQuery.equalTo("username", likedByUsername);
+
+   return userEventQuery.find()
+         .then(function(results) {
+             var userNames = results.map(function(a) { return a.get("AuthorName");});
+             response.success( JSON.stringify(userNames));
          }, function(error) {
              console.log("error:" + error);
              response.error(error);
