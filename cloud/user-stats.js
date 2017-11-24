@@ -106,7 +106,7 @@ Parse.Cloud.define("incrementUserLikes", function(request, response) {
 Parse.Cloud.define("getLikedAuthors", function(request, response) {
    var username = request.params.username;
    var userEventQuery = new Parse.Query("UserLikeEvent");
-   userEventQuery.equalTo("username", likedByUsername);
+   userEventQuery.equalTo("username", username);
 
    return userEventQuery.find()
          .then(function(results) {
