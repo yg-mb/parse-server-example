@@ -1,4 +1,5 @@
 require('./user-profile');
+require('./user-stats');
 require('./book-stats');
 require('./admin');
 require('./utils');

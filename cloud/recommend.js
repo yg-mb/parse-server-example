@@ -2,7 +2,7 @@
 
 
 // get recommended books for a user
-const MAX_NUMBER_OF_DAYS = 60;
+const MAX_NUMBER_OF_DAYS = 45;
 const MAX_NUMBER_OF_BOOKS_PER_GROUP = 4;
 const MAX_NUMBER_OF_READ = 20;
 const MIN_NUMBER_OF_PAGE = 5;
@@ -215,12 +215,12 @@ function getUserReadPreferences(userEvents) {
     };
     categories.sort();
 
-    //take top random 4 of top 8
+    //take top random 2 authors of top 8
     authors = authors.slice(0, 2*MAX_NUMBER_OF_BOOKS_PER_GROUP);
     categories = categories.slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP);
     shuffleArray(authors);
 //    shuffleArray(categories);
-    authors = authors.slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP);
+    authors = authors.slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP/2);
 //    categories = categories.slice(0, MAX_NUMBER_OF_BOOKS_PER_GROUP);
 
     authors = authors.map(function(a) { return a[0];});
@@ -228,7 +228,6 @@ function getUserReadPreferences(userEvents) {
     console.log("sorted authors:"+ authors);
     console.log("sorted categories:"+ categories);
 
-    //todo only keep first n results of authors and categories
     return Parse.Promise.as({
         "readBookIds": readBookIds,
         "authors": authors,

@@ -10,7 +10,7 @@ Parse.Cloud.define("updateReportedBook", function(request, response) {
 			success: function(results) {
     		  	var book = results[0];
     			book.set("checked",true);
-    			book.set("active",isActive )
+    			book.set("active",isActive );
     			book.save(null, { useMasterKey: true });
 				response.success("book updated to "+ book.get("active"));
     		},
@@ -32,7 +32,7 @@ Parse.Cloud.define("updateBanBook", function(request, response) {
                         success: function(results) {
                         var book = results[0];
                         book.set("checked",true);
-                        book.set("banBook",isBanBook )
+                        book.set("banBook",isBanBook );
                         book.save(null, { useMasterKey: true });
                                 response.success("book updated to "+ book.get("banBook"));
                 },
@@ -76,7 +76,7 @@ Parse.Cloud.define("updateBookComment",function(request, response){
                 success: function(results) {
                         var book = results[0];
                         book.set("checked",true);
-                        book.set("hasNewContent",hasNewContent )
+                        book.set("hasNewContent",hasNewContent );
                         book.save(null, { useMasterKey: true });
                         response.success("book updated to hasNewContent "+ book.get("hasNewContent"));
                 },
@@ -97,7 +97,7 @@ Parse.Cloud.define("markFeedbackAsRead", function(request, response) {
 			useMasterKey:true,
 			success: function(results) {
     		  	var feedback = results[0];
-    			feedback.set("read_date", new Date())
+    			feedback.set("read_date", new Date());
     			feedback.save(null, { useMasterKey: true });
 				response.success("UserFeedback updated read_date to "+ feedback.get("read_date"));
     		},
@@ -221,7 +221,7 @@ function createAninews(type, book, ownerUsername, relatedUsername){
 	var message;
 	switch (type) {
 			case "book_featured":
-				message =  book.get("AuthorName") + "'s story '" + book.get("title") + "' has been featured!"
+				message =  book.get("AuthorName") + "'s story '" + book.get("title") + "' has been featured!";
 				break;
 			}
 	if(message){
@@ -240,7 +240,7 @@ Parse.Cloud.define("updateOldUserScore", function(request, response) {
 	var userQuery = new Parse.Query(Parse.User);
     userQuery.greaterThan("totalScore", 2000);
     userQuery.descending("totalScore");
-    userQuery.lessThan("updatedAt", dateLimit)
+    userQuery.lessThan("updatedAt", dateLimit);
     userQuery.limit(1000);
     userQuery.find({
     		useMasterKey:true,
