@@ -64,6 +64,27 @@ Parse.Cloud.define("updateBookCategory", function(request, response) {
         });
 });
 
+Parse.Cloud.define("updateBookClubId", function(request, response) {
+        var publishedBookQuery =new Parse.Query("PublishedBook");
+        var bookId =request.params.bookGuId;
+        var clubGuid=request.params.clubGuid;
+        console.log("search with ids:"+bookId);
+        publishedBookQuery.equalTo("guid",bookId);
+        publishedBookQuery.limit(1);
+        publishedBookQuery.find({
+                        useMasterKey:true,
+                        success: function(results) {
+                        var book = results[0];
+                        book.set("clubGuid",clubGuid);
+                        book.save(null, { useMasterKey: true });
+                                response.success("book clubGuid updated to "+ book.get("clubGuid"));
+                },
+                error: function() {
+                        response.error("book doesn't exist!"+request.params.bookGuId);
+                }
+        });
+});
+
 Parse.Cloud.define("updateBookComment",function(request, response){
         var publishedBookQuery =new Parse.Query("PublishedBook");
         var bookId = request.params.bookGuId;
