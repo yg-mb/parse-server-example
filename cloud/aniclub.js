@@ -61,7 +61,7 @@
          var updatePromises = [];
          if(join){
            //join club
-           var bannedBefore = clubMember ? false : clubMember.get("banned");
+           var bannedBefore = !clubMember ? false : clubMember.get("banned");
            var currentMemberNumber = club.get("membersNumber");
            if(bannedBefore){
              //banned from club
