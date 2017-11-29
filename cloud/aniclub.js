@@ -1,5 +1,5 @@
  /*jshint esversion: 6 */
- const MAX_MEMBER_NUMBER = 200;
+ const DEFAULT_MAX_MEMBER_NUMBER = 100;
 
  Parse.Cloud.define("getMyClubs", function(request, response) {
     var username = request.params.username;
@@ -67,10 +67,11 @@
            //join club
            var bannedBefore = !clubMember ? false : clubMember.get("banned");
            var currentMemberNumber = club.get("membersNumber");
+           var maxMemberNumber = club.get("maxMemberNumber") || DEFAULT_MAX_MEMBER_NUMBER;
            if(bannedBefore){
              //banned from club
              response.error("Banned");
-           }else if(currentMemberNumber>=MAX_MEMBER_NUMBER){
+           }else if(currentMemberNumber>=maxMemberNumber){
              //club is full
              response.error("Full");
            }else{
