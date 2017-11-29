@@ -21,7 +21,11 @@
     return Parse.Promise.when(promises)
           .then(function(results) {
 
-              var getClubGuid = function(club) { return club.get("guid");};
+              var getClubGuid = function(club) {
+                return {
+                  guid: club.get("guid"),
+                  name: club.get("name")
+              }; };
               var ownedClubs =  results[0].map(getClubGuid);
               var joinedClubs = results[1].map(getClubGuid);
               var likedClubs =  results[2].map(getClubGuid);
