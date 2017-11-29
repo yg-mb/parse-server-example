@@ -1,4 +1,6 @@
  /*jshint esversion: 6 */
+ const MAX_MEMBER_NUMBER = 200;
+
  Parse.Cloud.define("getMyClubs", function(request, response) {
     var username = request.params.username;
 
@@ -7,23 +9,108 @@
          clubQuery.equalTo("owner", username);
          promises.push(clubQuery.find());
 
-									var clubMemberQuery = new Parse.Query("AniclubMember");
+				 var clubMemberQuery = new Parse.Query("AniclubMember");
          clubMemberQuery.equalTo("username", username);
          promises.push(clubMemberQuery.find());
 
          var userEventQuery = new Parse.Query("UserLikeEvent");
          userEventQuery.equalTo("username", username);
-         userEventQuery.notNull("clubGuid", clubGuid); //TODO not empty
-
-
+         userEventQuery.exists("clubGuid");
          promises.push(userEventQuery.find());
 
-    return userEventQuery.find()
+    return Parse.Promise.when(promises)
           .then(function(results) {
-              var userNames = results.map(function(a) { return a.get("AuthorName");});
-              response.success( JSON.stringify(userNames));
+
+              var getClubGuid = function(club) { return club.get("guid");};
+              var ownedClubs =  results[0].map(getClubGuid);
+              var joinedClubs = results[1].map(getClubGuid);
+              var likedClubs =  results[2].map(getClubGuid);
+              response.success( JSON.stringify({
+                  owned: ownedClubs,
+                  joined: joinedClubs,
+                  liked: likedClubs
+              }));
           }, function(error) {
               console.log("error:" + error);
               response.error(error);
           });
   });
+
+  Parse.Cloud.define("joinClub", function(request, response) {
+     var username = request.params.username;
+     var clubGuid = request.params.clubGuid;
+     var join = request.params.join;
+
+     var promises = [];
+      var clubQuery = new Parse.Query("Aniclub");
+      clubQuery.equalTo("guid", clubGuid);
+      clubQuery.limit(1);
+      promises.push(clubQuery.find());
+
+      var clubMemberQuery = new Parse.Query("AniclubMember");
+      clubMemberQuery.equalTo("aniclubGuid", clubGuid);
+      clubMemberQuery.equalTo("username", username);
+      clubMemberQuery.limit(1);
+      promises.push(clubMemberQuery.find());
+
+
+     return Parse.Promise.when(promises)
+       .then(function(results) {
+         var club = results[0][0];
+         var clubMember = results[1][0];
+         var updatePromises = [];
+         if(join){
+           //join club
+           var bannedBefore = clubMember ? false : clubMember.get("banned");
+           var currentMemberNumber = club.get("membersNumber");
+           if(bannedBefore){
+             //banned from club
+             response.error("Banned");
+           }else if(currentMemberNumber>=MAX_MEMBER_NUMBER){
+             //club is full
+             response.error("Full");
+           }else{
+             //clean up old data
+             if(clubMember){
+               updatePromises.push(clubMember.destroy(null, {
+                   useMasterKey: true
+               }));
+             }
+
+             //increment member count
+             club.increment("membersNumber", 1);
+             updatePromises.push(club.save(null, {
+                 useMasterKey: true
+             }));
+
+             //create member record
+             var AniclubMemberClass = Parse.Object.extend("AniclubMember");
+             var newClubMember = new AniclubMemberClass();
+             newClubMember.set("username", username);
+             newClubMember.set("aniclubGuid", clubGuid);
+             updatePromises.push(newClubMember.save(null, {
+                 useMasterKey: true
+             }));
+
+             return Parse.Promise.when(updatePromises);
+           }
+         }else{
+           //leave club
+            //clean up old data
+           updatePromises.push(clubMember.destroy(null, {
+               useMasterKey: true
+           }));
+           //decrease member count
+           club.increment("membersNumber", -1);
+           updatePromises.push(club.save(null, {
+               useMasterKey: true
+           }));
+           return Parse.Promise.when(updatePromises);
+         }
+       }). then( function(results){
+           response.success("OK");
+       }, function(error) {
+           console.log("error:" + error);
+           response.error(error);
+       });
+   });
