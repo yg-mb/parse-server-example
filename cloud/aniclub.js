@@ -114,3 +114,52 @@
            response.error(error);
        });
    });
+
+
+
+   Parse.Cloud.define("UpdateClubMember", function(request, response) {
+      var username = request.params.username;
+      var clubGuid = request.params.clubGuid;
+      var banned = request.params.banned;
+
+      var promises = [];
+       var clubQuery = new Parse.Query("Aniclub");
+       clubQuery.equalTo("guid", clubGuid);
+       clubQuery.limit(1);
+       promises.push(clubQuery.find());
+
+       var clubMemberQuery = new Parse.Query("AniclubMember");
+       clubMemberQuery.equalTo("aniclubGuid", clubGuid);
+       clubMemberQuery.equalTo("username", username);
+       clubMemberQuery.limit(1);
+       promises.push(clubMemberQuery.find());
+
+
+      return Parse.Promise.when(promises)
+        .then(function(results) {
+          var club = results[0][0];
+          var clubMember = results[1][0];
+          var updatePromises = [];
+          if(banned && clubMember){
+              //ban user
+                clubMember.set("banned", true);
+                updatePromises.push(clubMember.save(null, {
+                    useMasterKey: true
+                }));
+
+              //decrease member count
+              club.increment("membersNumber", -1);
+              updatePromises.push(club.save(null, {
+                  useMasterKey: true
+              }));
+              return Parse.Promise.when(updatePromises);
+          }else{
+            response.success("OK");
+          }
+        }). then( function(results){
+            response.success("OK");
+        }, function(error) {
+            console.log("error:" + error);
+            response.error(error);
+        });
+    });
