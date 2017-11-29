@@ -4,6 +4,7 @@ require('./book-stats');
 require('./admin');
 require('./utils');
 require('./recommend');
+require('./aniclub');
 
 Parse.Cloud.define('hello', function(req, res) {
   res.success('Hi from anitales');
