@@ -94,7 +94,7 @@
 
              return Parse.Promise.when(updatePromises);
            }
-         }else{
+         }else if(clubMember) {
            //leave club
             //clean up old data
            updatePromises.push(clubMember.destroy(null, {
@@ -106,6 +106,8 @@
                useMasterKey: true
            }));
            return Parse.Promise.when(updatePromises);
+         }else{
+            response.success("OK");
          }
        }). then( function(results){
            response.success("OK");
