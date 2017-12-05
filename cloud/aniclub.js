@@ -9,7 +9,7 @@
          clubQuery.equalTo("owner", username);
          promises.push(clubQuery.find());
 
-				 var clubMemberQuery = new Parse.Query("AniclubMember");
+				     var clubMemberQuery = new Parse.Query("AniclubMember");
          clubMemberQuery.equalTo("username", username);
          promises.push(clubMemberQuery.find());
 

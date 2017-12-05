@@ -43,30 +43,10 @@ Parse.Cloud.define("updateBanBook", function(request, response) {
 });
 
 
-Parse.Cloud.define("updateBookCategory", function(request, response) {
+Parse.Cloud.define("updateBook", function(request, response) {
         var publishedBookQuery =new Parse.Query("PublishedBook");
         var bookId =request.params.bookGuId;
         var category=request.params.category;
-        console.log("search with ids:"+bookId);
-        publishedBookQuery.equalTo("guid",bookId);
-        publishedBookQuery.limit(1);
-        publishedBookQuery.find({
-                        useMasterKey:true,
-                        success: function(results) {
-                        var book = results[0];
-                        book.set("category",category);
-                        book.save(null, { useMasterKey: true });
-                                response.success("book category updated to "+ book.get("category"));
-                },
-                error: function() {
-                        response.error("book doesn't exist!"+request.params.bookGuId);
-                }
-        });
-});
-
-Parse.Cloud.define("updateBookClubId", function(request, response) {
-        var publishedBookQuery =new Parse.Query("PublishedBook");
-        var bookId =request.params.bookGuId;
         var clubGuid=request.params.clubGuid;
         console.log("search with ids:"+bookId);
         publishedBookQuery.equalTo("guid",bookId);
@@ -75,9 +55,20 @@ Parse.Cloud.define("updateBookClubId", function(request, response) {
                         useMasterKey:true,
                         success: function(results) {
                         var book = results[0];
-                        book.set("clubGuid",clubGuid);
+                        if(category){
+                          book.set("category",category);
+                        }else{
+                         book.set("category","None");
+                        }
+
+																								if(clubGuid){
+																									book.set("clubGuid",clubGuid);
+																								}else{
+																									book.set("clubGuid","None");
+																								}
+
                         book.save(null, { useMasterKey: true });
-                                response.success("book clubGuid updated to "+ book.get("clubGuid"));
+                                response.success("book category updated to "+ book.get("category"));
                 },
                 error: function() {
                         response.error("book doesn't exist!"+request.params.bookGuId);
