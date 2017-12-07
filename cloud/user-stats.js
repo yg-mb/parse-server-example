@@ -138,9 +138,9 @@ Parse.Cloud.define("getLikedAuthors", function(request, response) {
          })
          .then(function(results) {
             if(results){
-                response.success("updated:" + username);
+                response.success("updated:" + clubGuid);
             }else{
-               response.error("not found:"+ username);
+               response.error("not found:"+ clubGuid);
             }
 
          }, function(error) {
