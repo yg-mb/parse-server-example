@@ -128,6 +128,7 @@
       var username = request.params.username;
       var clubGuid = request.params.clubGuid;
       var banned = request.params.banned;
+      var message = request.params.message;
 
       var promises = [];
        var clubQuery = new Parse.Query("Aniclub");
@@ -150,6 +151,9 @@
           if(banned && clubMember){
               //ban user
                 clubMember.set("banned", true);
+                if(message){}
+                 clubMember.set("banned_message", message);
+                }
                 updatePromises.push(clubMember.save(null, {
                     useMasterKey: true
                 }));
