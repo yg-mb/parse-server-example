@@ -151,7 +151,7 @@
           if(banned && clubMember){
               //ban user
                 clubMember.set("banned", true);
-                if(message){}
+                if(message){
                  clubMember.set("banned_message", message);
                 }
                 updatePromises.push(clubMember.save(null, {
