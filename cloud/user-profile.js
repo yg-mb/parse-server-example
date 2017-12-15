@@ -358,7 +358,7 @@ function refreshUserStats(userProfileHolder, books) {
     }
     for (i = 0; i < books.length; i++) {
         var book = books[i];
-        var isBookBanned = book.get("banBook") || (book.get("banBook") === undefined);
+        var isBookBanned = book.get("banBook");
         if (!isBookBanned) {
             var bookReads = book.get("playedTimes") || 0;
             var bookLikes = book.get("likedTimes") || 0;
