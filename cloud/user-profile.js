@@ -352,34 +352,34 @@ function refreshUserStats(userProfileHolder, books) {
     var totalFeatured = 0;
     var totalBannedBook = 0;
     var totalCheats = 0;
-    var totalAppUseTimeScore = user.get("timePlayedTotal") / 10 || 0;
+    var totalAppUseTimeScore = user.get("timePlayedTotal") / 20 || 0;
     if (totalAppUseTimeScore > 500) {
         totalAppUseTimeScore = 500 + (totalAppUseTimeScore - 500) / 10;
     }
     for (i = 0; i < books.length; i++) {
         var book = books[i];
-        var isBookActive = book.get("active") || (book.get("active") === undefined);
-        if (isBookActive) {
+        var isBookBanned = book.get("banBook") || (book.get("banBook") === undefined);
+        if (!isBookBanned) {
             var bookReads = book.get("playedTimes") || 0;
             var bookLikes = book.get("likedTimes") || 0;
             if (bookReads >= bookLikes) {
                 totalReads += bookReads;
                 totalLikes += bookLikes;
             } else {
-                totalCheats++;
+                totalReads += bookReads;
+                totalLikes += bookReads;
             }
             totalFeatured += book.get("featuredAccepted") || 0;
         } else {
             totalBannedBook++;
         }
     }
-    var totalScore = totalReads * 10 + totalLikes * 50 + totalFeatured * 250 + totalAppUseTimeScore - totalBannedBook * 250 - totalCheats * 250;
+    var totalScore = totalReads * 10 + totalLikes * 50 + totalFeatured * 250 + totalAppUseTimeScore - totalBannedBook * 250;
     user.set("totalReadsByOthers", totalReads);
     user.set("totalLikesByOthers", totalLikes);
     user.set("totalScore", totalScore);
     user.set("totalFeatured", totalFeatured);
     user.set("totalBanned", totalBannedBook);
-    user.set("totalCheats", totalCheats);
 
     updateUserLevelInfo(user);
 
