@@ -17,6 +17,7 @@
      var userEventQuery = new Parse.Query("UserLikeEvent");
      userEventQuery.equalTo("username", username);
      userEventQuery.exists("clubGuid");
+     userEventQuery.equalTo("like", true);
      promises.push(userEventQuery.find());
 
      return Parse.Promise.when(promises)
