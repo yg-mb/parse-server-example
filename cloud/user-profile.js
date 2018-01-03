@@ -39,7 +39,7 @@ Parse.Cloud.define("UserPurchase", function(request, response) {
         }
     }).then(function(userProfileHolder) {
         var product = findProductByName(userProfileHolder.products, productName);
-        if (product.get("type") == "rewards" && (product.get("name") != "read_book_reward" || amount != 1)) {
+        if (product.get("type") == "rewards" && (product.get("name") != "read_book_reward"  && product.get("name") != "share_reward" || amount != 1)) {
             return Parse.Promise.error("error_could_not_buy_rewards:" + productName);
         }
         return applyProductToUser(userProfileHolder, product, amount, request.params);
