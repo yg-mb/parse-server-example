@@ -149,6 +149,30 @@ Parse.Cloud.define("incrementFeaturedBookLike", function(request, response) {
            });
 });
 
+Parse.Cloud.define("incrementBookShareCount", function(request, response) {
+    var bookQuery = new Parse.Query("PublishedBook");
+    var username = request.params.username;
+    var bookGuid = request.params.bookGuid;
+    bookQuery.equalTo("guid", bookId);
+    bookQuery.limit(1);
+    bookQuery.find({
+               useMasterKey: true
+           }).then(function(results) {
+               var book = results[0];
+               if(book){
+                   book.increment("sharedTimes");
+                   return book.save(null, {useMasterKey: true });
+               }else{
+                    return Parse.Promise.reject("Could not find book with id: "+ bookId);
+               }
+           }).then(function(results) {
+               response.success("incrementBookShareCount with Book only");
+
+           }, function(error) {
+               console.log("error:" + error);
+               response.error(error);
+           });
+});
 
 function updateBookAndUserEvent(username, book, bookReadAddCount, bookLikeAddCount, bookRecommendAddCount, bookSaved){
         book.increment("playedTimes", bookReadAddCount);

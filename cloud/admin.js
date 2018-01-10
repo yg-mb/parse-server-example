@@ -51,30 +51,66 @@ Parse.Cloud.define("updateBook", function(request, response) {
         console.log("search with ids:"+bookId);
         publishedBookQuery.equalTo("guid",bookId);
         publishedBookQuery.limit(1);
-        publishedBookQuery.find({
-                        useMasterKey:true,
-                        success: function(results) {
-                        var book = results[0];
-                        if(category){
-                          book.set("category",category);
-                        }else{
-                         book.set("category","None");
-                        }
-
-																								if(clubGuid){
-																									book.set("clubGuid",clubGuid);
-																								}else{
-																									book.set("clubGuid","None");
-																								}
-
-                        book.save(null, { useMasterKey: true });
-                                response.success("book category updated to "+ book.get("category"));
-                },
-                error: function() {
-                        response.error("book doesn't exist!"+request.params.bookGuId);
-                }
-        });
+        publishedBookQuery.find()
+         .then(function(results){
+             var book = results[0];
+             var updatePromises = [];
+             if(category){
+               book.set("category",category);
+             }else{
+              book.set("category","None");
+             }
+													var oldClubGuid = book.get("clubGuid");
+													if( oldClubGuid != clubGuid){
+																	//update old club anitales count
+																	if(oldClubGuid && oldClubGuid!= "None"){
+																			updatePromises.push(updateAniclubBookCount(oldClubGuid));
+																	}
+																	if(clubGuid && clubGuid!="None"){
+																			updatePromises.push(updateAniclubBookCount(clubGuid));
+																	}
+													}
+             if(clubGuid){
+               book.set("clubGuid",clubGuid);
+               book.set("AddToClubDate", new Date());
+             }else{
+               book.set("clubGuid","None");
+             }
+            updatePromises.push(book.save(null, {useMasterKey: true}));
+            return Parse.Promise.when(updatePromises);
+          })
+         .then(function(results){
+             response.success("book updated");
+          }, function(error) {
+                          console.log("error:" + error);
+                          response.error(error);
+          });
 });
+
+function updateAniclubBookCount(clubGuid){
+		var promises = [];
+		var publishedBookQuery =new Parse.Query("PublishedBook");
+		publishedBookQuery.equalTo("clubGuid",clubGuid);
+		promises.push(publishedBookQuery.count({useMasterKey: true}));
+
+	var aniclubQuery = new Parse.Query("Aniclub");
+      aniclubQuery.equalTo("guid", clubGuid);
+      aniclubQuery.limit(1);
+
+ promises.push(aniclubQuery.find());
+
+	return Parse.Promise.when(promises)
+          .then(function(results) {
+           var bookCount = results[0];
+           var aniclub = results[1][0];
+           if(aniclub){
+             aniclub.set("bookCount", bookCount);
+           }
+           return aniclub.save(null, {useMasterKey: true});
+
+          });
+
+}
 
 Parse.Cloud.define("updateBookComment",function(request, response){
         var publishedBookQuery =new Parse.Query("PublishedBook");

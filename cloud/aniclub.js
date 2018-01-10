@@ -195,3 +195,100 @@
              response.error(error);
          });
  });
+
+Parse.Cloud.define("VisitClub", function(request, response) {
+     var username = request.params.username;
+     var clubGuid = request.params.clubGuid;
+
+     var promises = [];
+
+     var aniclubQuery = new Parse.Query("Aniclub");
+     aniclubQuery.equalTo("guid", clubGuid);
+     aniclubQuery.limit(1);
+
+      var userEventQuery = new Parse.Query("UserClubLastVisit");
+        userEventQuery.equalTo("username", username);
+        userEventQuery.equalTo("clubGuid", clubGuid);
+        userEventQuery.limit(1);
+        promises.push(userEventQuery.find());
+
+     return Parse.Promise.when(promises)
+         .then(function(results) {
+             var updatePromises = [];
+             //increase aniclub number of visits
+             if(results[0][0]){
+                var aniclub = results[0][0];
+                  aniclub.increment("visits");
+                   updatePromises.push(aniclub.save(null, {useMasterKey: true}));
+             }
+
+                if(results[1][0]){
+                    var userLastVisitEvent = results[1][0];
+                    userLastVisitEvent.set("lastVisit", new Date());
+                    updatePromises.push(userLastVisitEvent.save(null, {
+                        useMasterKey: true
+                    }));
+                }else{
+                    var UserEventClass = Parse.Object.extend("UserClubLastVisit");
+                    userEvent = new UserEventClass();
+                    userEvent.set("username", username);
+                    userEvent.set("clubGuid", clubGuid);
+                    userEvent.set("lastVisit", new Date());
+                    updatePromises.push(userEvent.save(null, {
+                        useMasterKey: true
+                    }));
+                }
+             return Parse.Promise.when(updatePromises);
+         }).then(function(results) {
+             response.success("OK");
+         }, function(error) {
+             console.log("error:" + error);
+             response.error(error);
+         });
+ });
+
+Parse.Cloud.define("getClubStats", function(request, response) {
+     var clubGuids =request.params.clubGuids;
+     var username = request.params.username;
+     var lastVisitQuery = new Parse.Query("UserClubLastVisit");
+         lastVisitQuery.containedIn("clubGuid", clubGuids);
+         lastVisitQuery.equalTo("username", username);
+
+     return lastVisitQuery.find().then(function(results) {
+            var countPromises = [];
+            for(var i= 0; i< results.length ; i++){
+                var lastVisitEvent = results[i];
+                var clubId = lastVisitEvent.get("clubGuid");
+                var lastVisit = lastVisitEvent.get("lastVisit");
+
+                 var aninewsUpdateCountQuery = new Parse.Query("Aninews");
+                    aninewsUpdateCountQuery.greaterThan("createdAt", lastVisit);
+                    countPromises.push(aninewsUpdateCountQuery.count({useMasterKey: true})
+                       .then(function(countResult){
+                       return Parse.Promise.as({
+                           "clubGuid": clubId,
+                           "AninewsCount": countResult,
+                           "lastVisit": lastVisit
+                       });
+                    }));
+                 var bookUpdateCountQuery = new Parse.Query("PublishedBook");
+                     bookUpdateCountQuery.greaterThan("AddToClubDate", lastVisit);
+                     countPromises.push(bookUpdateCountQuery.count({
+                         useMasterKey: true
+                     }).then(function(countResult){
+                        return Parse.Promise.as({
+                            "clubGuid": clubId,
+                            "BooksCount": countResult,
+                            "lastVisit": lastVisit
+                        });
+                     }));
+                }
+             return Parse.Promise.when(countPromises);
+         }).then(function(results) {
+                        response.success(JSON.stringify(results));
+                    }, function(error) {
+                        console.log("error:" + error);
+                        response.error(error);
+                    });
+
+});
