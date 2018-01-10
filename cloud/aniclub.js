@@ -264,23 +264,23 @@ Parse.Cloud.define("getClubStats", function(request, response) {
 
                  var aninewsUpdateCountQuery = new Parse.Query("Aninews");
                     aninewsUpdateCountQuery.greaterThan("createdAt", lastVisit);
+                    aninewsUpdateCountQuery.equalTo("clubGuid", clubId);
                     countPromises.push(aninewsUpdateCountQuery.count({useMasterKey: true})
                        .then(function(countResult){
                        return Parse.Promise.as({
                            "clubGuid": clubId,
-                           "AninewsCount": countResult,
-                           "lastVisit": lastVisit
+                           "AninewsUpdateCount": countResult
                        });
                     }));
                  var bookUpdateCountQuery = new Parse.Query("PublishedBook");
                      bookUpdateCountQuery.greaterThan("AddToClubDate", lastVisit);
+                     bookUpdateCountQuery.equalTo("clubGuid", clubId);
                      countPromises.push(bookUpdateCountQuery.count({
                          useMasterKey: true
                      }).then(function(countResult){
                         return Parse.Promise.as({
                             "clubGuid": clubId,
-                            "BooksCount": countResult,
-                            "lastVisit": lastVisit
+                            "BooksUpdateCount": countResult
                         });
                      }));
                 }
