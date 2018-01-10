@@ -216,28 +216,28 @@ Parse.Cloud.define("VisitClub", function(request, response) {
          .then(function(results) {
              var updatePromises = [];
              //increase aniclub number of visits
-             if(results[0][0]){
+             if(results[0] && results[0][0]){
                 var aniclub = results[0][0];
                   aniclub.increment("visits");
                    updatePromises.push(aniclub.save(null, {useMasterKey: true}));
              }
 
-                if(results[1][0]){
-                    var userLastVisitEvent = results[1][0];
-                    userLastVisitEvent.set("lastVisit", new Date());
-                    updatePromises.push(userLastVisitEvent.save(null, {
-                        useMasterKey: true
-                    }));
-                }else{
-                    var UserEventClass = Parse.Object.extend("UserClubLastVisit");
-                    userEvent = new UserEventClass();
-                    userEvent.set("username", username);
-                    userEvent.set("clubGuid", clubGuid);
-                    userEvent.set("lastVisit", new Date());
-                    updatePromises.push(userEvent.save(null, {
-                        useMasterKey: true
-                    }));
-                }
+            if(results[1] && results[1][0]){
+                var userLastVisitEvent = results[1][0];
+                userLastVisitEvent.set("lastVisit", new Date());
+                updatePromises.push(userLastVisitEvent.save(null, {
+                    useMasterKey: true
+                }));
+            }else{
+                var UserEventClass = Parse.Object.extend("UserClubLastVisit");
+                userEvent = new UserEventClass();
+                userEvent.set("username", username);
+                userEvent.set("clubGuid", clubGuid);
+                userEvent.set("lastVisit", new Date());
+                updatePromises.push(userEvent.save(null, {
+                    useMasterKey: true
+                }));
+            }
              return Parse.Promise.when(updatePromises);
          }).then(function(results) {
              response.success("OK");
