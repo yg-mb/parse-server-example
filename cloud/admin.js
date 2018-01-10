@@ -65,10 +65,10 @@ Parse.Cloud.define("updateBook", function(request, response) {
                  if (oldClubGuid != clubGuid) {
                      //update old club anitales count
                      if (oldClubGuid && oldClubGuid != "None") {
-                         updatePromises.push(updateAniclubBookCount(oldClubGuid));
+                         updatePromises.push(updateAniclubBookCount(oldClubGuid, 0));
                      }
                      if (clubGuid && clubGuid != "None") {
-                         updatePromises.push(updateAniclubBookCount(clubGuid));
+                         updatePromises.push(updateAniclubBookCount(clubGuid, 1));
                      }
                  }
                  if (clubGuid) {
@@ -89,7 +89,7 @@ Parse.Cloud.define("updateBook", function(request, response) {
           });
 });
 
-function updateAniclubBookCount(clubGuid){
+function updateAniclubBookCount(clubGuid, extraCount){
 		var promises = [];
 		var publishedBookQuery =new Parse.Query("PublishedBook");
 		publishedBookQuery.equalTo("clubGuid",clubGuid);
@@ -106,7 +106,7 @@ function updateAniclubBookCount(clubGuid){
            var bookCount = results[0];
            var aniclub = results[1][0];
            if(aniclub){
-             aniclub.set("bookCount", bookCount);
+             aniclub.set("bookCount", bookCount+extraCount);
            }
            return aniclub.save(null, {useMasterKey: true});
 
