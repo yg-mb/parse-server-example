@@ -205,6 +205,7 @@ Parse.Cloud.define("VisitClub", function(request, response) {
      var aniclubQuery = new Parse.Query("Aniclub");
      aniclubQuery.equalTo("guid", clubGuid);
      aniclubQuery.limit(1);
+    promises.push(aniclubQuery.find());
 
       var userEventQuery = new Parse.Query("UserClubLastVisit");
         userEventQuery.equalTo("username", username);
