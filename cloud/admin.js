@@ -53,30 +53,32 @@ Parse.Cloud.define("updateBook", function(request, response) {
         publishedBookQuery.limit(1);
         publishedBookQuery.find()
          .then(function(results){
-             var book = results[0];
              var updatePromises = [];
-             if(category){
-               book.set("category",category);
-             }else{
-              book.set("category","None");
+             var book = results[0];
+             if(book) {
+                 if (category) {
+                     book.set("category", category);
+                 } else {
+                     book.set("category", "None");
+                 }
+                 var oldClubGuid = book.get("clubGuid");
+                 if (oldClubGuid != clubGuid) {
+                     //update old club anitales count
+                     if (oldClubGuid && oldClubGuid != "None") {
+                         updatePromises.push(updateAniclubBookCount(oldClubGuid));
+                     }
+                     if (clubGuid && clubGuid != "None") {
+                         updatePromises.push(updateAniclubBookCount(clubGuid));
+                     }
+                 }
+                 if (clubGuid) {
+                     book.set("clubGuid", clubGuid);
+                     book.set("AddToClubDate", new Date());
+                 } else {
+                     book.set("clubGuid", "None");
+                 }
+                 updatePromises.push(book.save(null, {useMasterKey: true}));
              }
-													var oldClubGuid = book.get("clubGuid");
-													if( oldClubGuid != clubGuid){
-																	//update old club anitales count
-																	if(oldClubGuid && oldClubGuid!= "None"){
-																			updatePromises.push(updateAniclubBookCount(oldClubGuid));
-																	}
-																	if(clubGuid && clubGuid!="None"){
-																			updatePromises.push(updateAniclubBookCount(clubGuid));
-																	}
-													}
-             if(clubGuid){
-               book.set("clubGuid",clubGuid);
-               book.set("AddToClubDate", new Date());
-             }else{
-               book.set("clubGuid","None");
-             }
-            updatePromises.push(book.save(null, {useMasterKey: true}));
             return Parse.Promise.when(updatePromises);
           })
          .then(function(results){
