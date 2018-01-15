@@ -198,7 +198,7 @@
 
 Parse.Cloud.define("VisitClub", function(request, response) {
      var username = request.params.username;
-     var clubGuid = request.params.clubGuid;
+     var clubGuid = request.params.clubGuid || request.params.club_guid;
 
      var promises = [];
 
