@@ -221,11 +221,13 @@ Parse.Cloud.define("VisitClub", function(request, response) {
                 var aniclub = results[0][0];
                   aniclub.increment("visits");
                    updatePromises.push(aniclub.save(null, {useMasterKey: true}));
+                   console.log("increment aniclub visits");
              }
 
             if(results[1] && results[1][0]){
                 var userLastVisitEvent = results[1][0];
                 userLastVisitEvent.set("lastVisit", new Date());
+                console.log("update aniclub lastVisit");
                 updatePromises.push(userLastVisitEvent.save(null, {
                     useMasterKey: true
                 }));
@@ -235,6 +237,7 @@ Parse.Cloud.define("VisitClub", function(request, response) {
                 userEvent.set("username", username);
                 userEvent.set("clubGuid", clubGuid);
                 userEvent.set("lastVisit", new Date());
+                console.log("create aniclub lastVisit");
                 updatePromises.push(userEvent.save(null, {
                     useMasterKey: true
                 }));
