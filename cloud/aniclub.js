@@ -272,7 +272,7 @@ Parse.Cloud.define("getClubStats", function(request, response) {
                        .then(function(countResult){
                        return Parse.Promise.as({
                            "clubGuid": clubId,
-                           "AninewsUpdateCount": countResult
+                           "aninewsUpdateCount": countResult
                        });
                     }));
                  var bookUpdateCountQuery = new Parse.Query("PublishedBook");
@@ -283,13 +283,13 @@ Parse.Cloud.define("getClubStats", function(request, response) {
                      }).then(function(countResult){
                         return Parse.Promise.as({
                             "clubGuid": clubId,
-                            "BooksUpdateCount": countResult
+                            "booksUpdateCount": countResult
                         });
                      }));
                 }
              return Parse.Promise.when(countPromises);
          }).then(function(results) {
-                        response.success(JSON.stringify(results));
+                        response.success(JSON.stringify({"results": results}));
                     }, function(error) {
                         console.log("error:" + error);
                         response.error(error);
