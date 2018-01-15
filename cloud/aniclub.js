@@ -227,13 +227,13 @@ Parse.Cloud.define("VisitClub", function(request, response) {
             if(results[1] && results[1][0]){
                 var userLastVisitEvent = results[1][0];
                 userLastVisitEvent.set("lastVisit", new Date());
-                console.log("update aniclub lastVisit to "+ userEvent.get("lastVisit"));
+                console.log("update aniclub lastVisit to "+ userLastVisitEvent.get("lastVisit"));
                 updatePromises.push(userLastVisitEvent.save(null, {
                     useMasterKey: true
                 }));
             }else{
                 var UserEventClass = Parse.Object.extend("UserClubLastVisit");
-                userEvent = new UserEventClass();
+                var userEvent = new UserEventClass();
                 userEvent.set("username", username);
                 userEvent.set("clubGuid", clubGuid);
                 userEvent.set("lastVisit", new Date());
