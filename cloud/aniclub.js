@@ -254,7 +254,7 @@ Parse.Cloud.define("VisitClub", function(request, response) {
 function getAninewsUpdateCountPromise(clubGuid, lastVisit){
     var aninewsUpdateCountQuery = new Parse.Query("Aninews");
     aninewsUpdateCountQuery.greaterThan("createdAt", lastVisit);
-    aninewsUpdateCountQuery.equalTo("clubGuid", clubId);
+    aninewsUpdateCountQuery.equalTo("clubGuid", clubGuid);
     return aninewsUpdateCountQuery.count({useMasterKey: true})
        .then(function(countResult){
        return Parse.Promise.as({
