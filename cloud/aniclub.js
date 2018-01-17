@@ -251,6 +251,33 @@ Parse.Cloud.define("VisitClub", function(request, response) {
          });
  });
 
+function getAninewsUpdateCountPromise(clubGuid, lastVisit){
+    var aninewsUpdateCountQuery = new Parse.Query("Aninews");
+    aninewsUpdateCountQuery.greaterThan("createdAt", lastVisit);
+    aninewsUpdateCountQuery.equalTo("clubGuid", clubId);
+    return aninewsUpdateCountQuery.count({useMasterKey: true})
+       .then(function(countResult){
+       return Parse.Promise.as({
+           "clubGuid": clubId,
+           "aninewsUpdateCount": countResult
+       });
+    });
+}
+
+function getBookUpdateCountPromise(clubGuid, lastVisit){
+    var bookUpdateCountQuery = new Parse.Query("PublishedBook");
+     bookUpdateCountQuery.greaterThan("AddToClubDate", lastVisit);
+     bookUpdateCountQuery.equalTo("clubGuid", clubId);
+     return bookUpdateCountQuery.count({useMasterKey: true})
+        .then(function(countResult){
+            return Parse.Promise.as({
+                "clubGuid": clubId,
+                "booksUpdateCount": countResult
+            });
+     });
+}
+
+
 Parse.Cloud.define("getClubStats", function(request, response) {
      var clubGuids =request.params.clubGuids;
      var username = request.params.username;
@@ -264,28 +291,8 @@ Parse.Cloud.define("getClubStats", function(request, response) {
                 var lastVisitEvent = results[i];
                 var clubId = lastVisitEvent.get("clubGuid");
                 var lastVisit = lastVisitEvent.get("lastVisit");
-
-                 var aninewsUpdateCountQuery = new Parse.Query("Aninews");
-                    aninewsUpdateCountQuery.greaterThan("createdAt", lastVisit);
-                    aninewsUpdateCountQuery.equalTo("clubGuid", clubId);
-                    countPromises.push(aninewsUpdateCountQuery.count({useMasterKey: true})
-                       .then(function(countResult){
-                       return Parse.Promise.as({
-                           "clubGuid": clubId,
-                           "aninewsUpdateCount": countResult
-                       });
-                    }));
-                 var bookUpdateCountQuery = new Parse.Query("PublishedBook");
-                     bookUpdateCountQuery.greaterThan("AddToClubDate", lastVisit);
-                     bookUpdateCountQuery.equalTo("clubGuid", clubId);
-                     countPromises.push(bookUpdateCountQuery.count({
-                         useMasterKey: true
-                     }).then(function(countResult){
-                        return Parse.Promise.as({
-                            "clubGuid": clubId,
-                            "booksUpdateCount": countResult
-                        });
-                     }));
+                countPromises.push(getAninewsUpdateCountPromise(clubId, lastVisit));
+                countPromises.push(getBookUpdateCountPromise(clubId, lastVisit));
                 }
              return Parse.Promise.when(countPromises);
          }).then(function(results) {
