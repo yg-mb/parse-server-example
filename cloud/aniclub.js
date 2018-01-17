@@ -258,7 +258,7 @@ function getAninewsUpdateCountPromise(clubGuid, lastVisit){
     return aninewsUpdateCountQuery.count({useMasterKey: true})
        .then(function(countResult){
        return Parse.Promise.as({
-           "clubGuid": clubId,
+           "clubGuid": clubGuid,
            "aninewsUpdateCount": countResult
        });
     });
@@ -267,11 +267,11 @@ function getAninewsUpdateCountPromise(clubGuid, lastVisit){
 function getBookUpdateCountPromise(clubGuid, lastVisit){
     var bookUpdateCountQuery = new Parse.Query("PublishedBook");
      bookUpdateCountQuery.greaterThan("AddToClubDate", lastVisit);
-     bookUpdateCountQuery.equalTo("clubGuid", clubId);
+     bookUpdateCountQuery.equalTo("clubGuid", clubGuid);
      return bookUpdateCountQuery.count({useMasterKey: true})
         .then(function(countResult){
             return Parse.Promise.as({
-                "clubGuid": clubId,
+                "clubGuid": clubGuid,
                 "booksUpdateCount": countResult
             });
      });
