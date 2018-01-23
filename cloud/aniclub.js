@@ -251,6 +251,63 @@ Parse.Cloud.define("VisitClub", function(request, response) {
          });
  });
 
+
+ Parse.Cloud.define("VisitClubBookshelf", function(request, response) {
+     var username = request.params.username;
+     var clubGuid = request.params.clubGuid || request.params.club_guid;
+
+     var promises = [];
+
+     var aniclubQuery = new Parse.Query("Aniclub");
+     aniclubQuery.equalTo("guid", clubGuid);
+     aniclubQuery.limit(1);
+     promises.push(aniclubQuery.find());
+
+     var userEventQuery = new Parse.Query("UserClubLastVisit");
+     userEventQuery.equalTo("username", username);
+     userEventQuery.equalTo("clubGuid", clubGuid);
+     userEventQuery.limit(1);
+     promises.push(userEventQuery.find());
+
+     return Parse.Promise.when(promises)
+         .then(function(results) {
+             var updatePromises = [];
+             //increase aniclub number of visits
+             if(results[0] && results[0][0]){
+                 var aniclub = results[0][0];
+                 aniclub.increment("visits");
+                 updatePromises.push(aniclub.save(null, {useMasterKey: true}));
+                 console.log("increment aniclub visits to "+aniclub.get("visits"));
+             }
+
+             if(results[1] && results[1][0]){
+                 var userLastVisitEvent = results[1][0];
+                 userLastVisitEvent.set("lastVisitBookshelf", new Date());
+                 console.log("update aniclub lastVisitBookshelf to "+ userLastVisitEvent.get("lastVisitBookshelf"));
+                 updatePromises.push(userLastVisitEvent.save(null, {
+                     useMasterKey: true
+                 }));
+             }else{
+                 var UserEventClass = Parse.Object.extend("UserClubLastVisit");
+                 var userEvent = new UserEventClass();
+                 userEvent.set("username", username);
+                 userEvent.set("clubGuid", clubGuid);
+                 userEvent.set("lastVisit", new Date());
+                 userEvent.set("lastVisitBookshelf", new Date());
+                 console.log("create aniclub lastVisitBookshelf to "+ userEvent.get("lastVisitBookshelf"));
+                 updatePromises.push(userEvent.save(null, {
+                     useMasterKey: true
+                 }));
+             }
+             return Parse.Promise.when(updatePromises);
+         }).then(function(results) {
+             response.success("OK");
+         }, function(error) {
+             console.log("error:" + error);
+             response.error(error);
+         });
+ });
+
 function getAninewsUpdateCountPromise(clubGuid, lastVisit){
     var aninewsUpdateCountQuery = new Parse.Query("Aninews");
     aninewsUpdateCountQuery.greaterThan("createdAt", lastVisit);
@@ -291,8 +348,9 @@ Parse.Cloud.define("getClubStats", function(request, response) {
                 var lastVisitEvent = results[i];
                 var clubId = lastVisitEvent.get("clubGuid");
                 var lastVisit = lastVisitEvent.get("lastVisit");
+                var lastVisitBookshelf = lastVisitEvent.get("lastVisitBookshelf") || lastVisit;
                 countPromises.push(getAninewsUpdateCountPromise(clubId, lastVisit));
-                countPromises.push(getBookUpdateCountPromise(clubId, lastVisit));
+                countPromises.push(getBookUpdateCountPromise(clubId, lastVisitBookshelf));
                 }
              return Parse.Promise.when(countPromises);
          }).then(function(results) {
