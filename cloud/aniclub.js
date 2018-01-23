@@ -258,11 +258,6 @@ Parse.Cloud.define("VisitClub", function(request, response) {
 
      var promises = [];
 
-     var aniclubQuery = new Parse.Query("Aniclub");
-     aniclubQuery.equalTo("guid", clubGuid);
-     aniclubQuery.limit(1);
-     promises.push(aniclubQuery.find());
-
      var userEventQuery = new Parse.Query("UserClubLastVisit");
      userEventQuery.equalTo("username", username);
      userEventQuery.equalTo("clubGuid", clubGuid);
@@ -272,16 +267,9 @@ Parse.Cloud.define("VisitClub", function(request, response) {
      return Parse.Promise.when(promises)
          .then(function(results) {
              var updatePromises = [];
-             //increase aniclub number of visits
-             if(results[0] && results[0][0]){
-                 var aniclub = results[0][0];
-                 aniclub.increment("visits");
-                 updatePromises.push(aniclub.save(null, {useMasterKey: true}));
-                 console.log("increment aniclub visits to "+aniclub.get("visits"));
-             }
 
-             if(results[1] && results[1][0]){
-                 var userLastVisitEvent = results[1][0];
+             if(results[0] && results[0][0]){
+                 var userLastVisitEvent = results[0][0];
                  userLastVisitEvent.set("lastVisitBookshelf", new Date());
                  console.log("update aniclub lastVisitBookshelf to "+ userLastVisitEvent.get("lastVisitBookshelf"));
                  updatePromises.push(userLastVisitEvent.save(null, {
