@@ -348,7 +348,7 @@ Parse.Cloud.define("getClubStats", function(request, response) {
                 var lastVisitEvent = results[i];
                 var clubId = lastVisitEvent.get("clubGuid");
                 var lastVisit = lastVisitEvent.get("lastVisit");
-                var lastVisitBookshelf = lastVisitEvent.get("lastVisitBookshelf") || lastVisit;
+                var lastVisitBookshelf = lastVisitEvent.get("lastVisitBookshelf") || (new Date() - 14);
                 countPromises.push(getAninewsUpdateCountPromise(clubId, lastVisit));
                 countPromises.push(getBookUpdateCountPromise(clubId, lastVisitBookshelf));
                 }
