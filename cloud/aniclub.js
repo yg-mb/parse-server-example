@@ -329,14 +329,15 @@ Parse.Cloud.define("getClubStats", function(request, response) {
      var lastVisitQuery = new Parse.Query("UserClubLastVisit");
          lastVisitQuery.containedIn("clubGuid", clubGuids);
          lastVisitQuery.equalTo("username", username);
-
+     var lastVisitBookshelfDefault = new Date();
+        lastVisitBookshelfDefault.setDate(lastVisitBookshelfDefault.getDate() - 14);
      return lastVisitQuery.find().then(function(results) {
             var countPromises = [];
             for(var i= 0; i< results.length ; i++){
                 var lastVisitEvent = results[i];
                 var clubId = lastVisitEvent.get("clubGuid");
                 var lastVisit = lastVisitEvent.get("lastVisit");
-                var lastVisitBookshelf = lastVisitEvent.get("lastVisitBookshelf") || (new Date() - 14);
+                var lastVisitBookshelf = lastVisitEvent.get("lastVisitBookshelf") || lastVisitBookshelfDefault;
                 console.log("lastVisitBookshelf:"+ lastVisitBookshelf.toString());
                 countPromises.push(getAninewsUpdateCountPromise(clubId, lastVisit));
                 countPromises.push(getBookUpdateCountPromise(clubId, lastVisitBookshelf));
